@@ -1,0 +1,21 @@
+<section class="grid mainBackground" style="height: 100%; align-items: center; flex-direction: row; margin: 0; padding: 0;">
+    <div class="col-1 md:col-1 lg:col-1"></div>
+    <p-card class="col-10 md:col-10 lg:col-10">
+        
+        <div style="display: flex; flex-direction: column; align-items: center;">
+                <img alt="Beanstalk" src="/assets/logo_beanstalk.png" width="80px" style="background-size: cover; height: 100%; margin-top: -20px;">        
+        </div>
+                
+        <div style="margin-top: 10px;">
+            <h1 style="color: #057671; font-size: 25px;">Onboarding</h1>
+        </div>
+
+        <br>
+        <p-steps [model]="steps"></p-steps>
+        <br>
+        
+        <router-outlet></router-outlet>
+
+    </p-card>
+    <div class="col-1 md:col-1 lg:col-1"></div>
+</section>

@@ -1,0 +1,84 @@
+<p-scrollPanel [style]="{width: '100%', height: '40vh'}">
+    <p-fieldset legend="Social Media">
+        <form [formGroup]="dispensarySocialMediaForm">
+            <div class="grid" style="overflow: auto;">
+
+                <div class="col-12 md:col-6 lg:col-6"
+                    style="display: flex; flex-direction: column; align-items: flex-end;">
+
+                    <div class="p-inputgroup" style="margin-top: 15px;">
+                        <span class="p-inputgroup-addon">
+                            <i class="pi pi-globe"></i>
+                        </span>
+                        <span class="p-float-label">
+                            <input pInputText type="text" class="mr-2" formControlName="website">
+                            <label for="inputgroup">Website</label>
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="col-12 md:col-6 lg:col-6"
+                    style="display: flex; flex-direction: column; align-items: flex-end;">
+
+                    <div class="p-inputgroup" style="margin-top: 15px;">
+                        <span class="p-inputgroup-addon">
+                            <i class="pi pi-facebook"></i>
+                        </span>
+                        <span class="p-float-label">
+                            <input pInputText type="text" class="mr-2" formControlName="facebook">
+                            <label for="inputgroup">Facebook</label>
+                        </span>
+                    </div>
+
+                    <div class="p-inputgroup" style="margin-top: 25px;">
+                        <span class="p-inputgroup-addon">
+                            <i class="pi pi-instagram"></i>
+                        </span>
+                        <span class="p-float-label">
+                            <input pInputText type="text" class="mr-2" formControlName="instagram">
+                            <label for="inputgroup">Instagram</label>
+                        </span>
+                    </div>
+
+                    <div class="p-inputgroup" style="margin-top: 25px;">
+                        <span class="p-inputgroup-addon">
+                            <i class="pi pi-twitter"></i>
+                        </span>
+                        <span class="p-float-label">
+                            <input pInputText type="text" class="mr-2" formControlName="twitter">
+                            <label for="inputgroup">Twitter</label>
+                        </span>
+                    </div>
+
+                    <div class="p-inputgroup" style="margin-top: 25px;">
+                        <span class="p-inputgroup-addon">
+                            <i class="pi pi-youtube"></i>
+                        </span>
+                        <span class="p-float-label">
+                            <input pInputText type="text" class="mr-2" formControlName="youtube">
+                            <label for="inputgroup">Youtube</label>
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+        </form>
+    </p-fieldset>
+</p-scrollPanel>
+
+<div class="grid">
+    <div class="col-6">
+        <button pButton type="button"
+            [style]="{height: '50px', width: '30%', background: '#FFFFFF', color: '#66CBE3' , border: 'none'}"
+            label="Back" icon="pi pi-angle-left" iconPos="left" (click)="backPage()">
+        </button>
+    </div>
+    <div class="col-6">
+        <button pButton type="button" [style]="{height: '50px', width: '100%', background: '#E19A3D', border: 'none'}"
+            [disabled]="!dispensarySocialMediaForm.valid" label="Continue" icon="pi pi-angle-right" iconPos="right"
+            (click)="nextPage()">
+        </button>
+    </div>
+</div>

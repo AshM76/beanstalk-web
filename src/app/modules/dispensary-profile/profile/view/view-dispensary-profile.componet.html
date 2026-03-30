@@ -1,0 +1,40 @@
+<p-toolbar class="ml-4 mr-4 h-5">
+    <div class="p-toolbar-group-left">
+        <label style="font-size:18px; font-weight: 500;">Dispensary Profile</label>
+    </div>
+    <div class="p-toolbar-group-right">
+        <p-button *authorized="'edit'" label="Edit" icon="pi pi-pencil" class="mr-2" [routerLink]="['/dispensary/profile/update']"
+            [style]="{'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}">
+        </p-button>
+
+    </div>
+</p-toolbar>
+<div class="grid">
+    <p-card class="col-12">
+        <div class="grid">
+            <!-- Logo -->
+            <div class="col-2 md:col-2 flex flex-column yBorderGroup">
+                <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Logo</label>
+                    <p-image *ngIf="!dispensary.dispensary_logo" src="/assets/user-default.jpg" alt="Image" width="150"
+                        [preview]="true" [imageStyle]="{'border-radius':'25px'}"></p-image>
+
+                    <p-image *ngIf="dispensary.dispensary_logo" [src]="dispensary.dispensary_logo" alt="Image" width="150" [preview]="true"
+                        [imageStyle]="{'border-radius':'25px'}"></p-image>
+            </div>
+
+            <div class="col-10 md:col-10 flex flex-column yBorderGroup">
+                <!-- Name -->
+                <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Name</label>
+                <label class="yLabel mr-2" style="padding: 0.75rem;"> {{dispensary?.dispensary_name }}</label>
+                <br>
+                <!-- Description -->
+                <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Description</label>
+                <label class="yLabel mr-2" style="padding: 0.75rem;"> {{dispensary?.dispensary_description}}</label>
+                <br>
+                <!-- License Number -->
+                <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">License #</label>
+                <label class="yLabel mr-2" style="padding: 0.75rem;"> {{dispensary?.dispensary_license}}</label>
+            </div>
+        </div>
+    </p-card>
+</div>

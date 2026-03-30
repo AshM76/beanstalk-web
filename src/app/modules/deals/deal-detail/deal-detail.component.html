@@ -1,0 +1,183 @@
+<p-messages></p-messages>
+<!-- Panel -->
+<div class="grid flex-column" style="height: 100%;">
+    <ngx-spinner bdColor="rgba(40,80,80,0.8)" size="medium" color="#ede854" type="ball-beat" [fullScreen]="true">
+        <p style="color: #ede854"> Loading... </p>
+    </ngx-spinner>
+    <!-- Title-Panel -->
+    <div class="col-12 pl-4 pt-5 pr-4">
+        <p-breadcrumb [model]="items" [home]="home"></p-breadcrumb>
+    </div>
+
+    <p-toolbar class="ml-4 mr-4">
+        <div class="p-toolbar-group-left">
+            <label style="font-size:20px;"><b>Detail of Deal</b></label>
+        </div>
+        <div class="p-toolbar-group-right">
+            <p-button label="Back" icon="pi pi-arrow-circle-left" class="mr-2" [routerLink]="['/deals']">
+            </p-button>
+            <p-button *ngIf="deal.deal_status == 'saved' || deal.deal_status == 'published'" label="Edit"
+                icon="pi pi-pencil" class="mr-2" [routerLink]="['/deals/edit/'+ deal.deal_id]"
+                [style]="{'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}"></p-button>
+            <p-button *ngIf="deal.deal_status == 'closed'" label="Re-Publish" icon="pi pi-refresh" class="mr-2"
+                [routerLink]="['/deals/re-publish/'+ deal.deal_id]"
+                [style]="{'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}"></p-button>
+        </div>
+    </p-toolbar>
+
+    <!-- Content-Panel -->
+    <p-scrollPanel class="ml-4 mr-4" styleClass="custom" [style]="{height: '600px'}">
+        <div class="grid">
+            <p-card class="col-8 mt-2" header="Deal">
+                <div class="grid">
+                    <!-- Status -->
+                    <div class="col-12 flex flex-row">
+                        <label class="text-600 mb-2 mr-4">Status</label>
+                        <p-chip [styleClass]="'mr-2 deal-status deal-' + deal.deal_status" label={{deal.deal_status}}>
+                        </p-chip>
+                    </div>
+
+                    <!-- Title -->
+                    <div class="col-12 flex flex-column">
+                        <label class="text-600 mb-2">Title</label>
+                        <label class="input-readonly">{{ deal.deal_title }}</label>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="col-12 flex flex-column">
+                        <label class="text-600 mb-2">Description</label>
+                        <label class="input-readonly">{{ deal.deal_description }}</label>
+                    </div>
+
+                    <!-- Image -->
+                    <div class="col-12 flex flex-column">
+                        <label class="text-600">Image</label>
+                        <img [src]="deal.deal_imageURL" class="ml-5 mb-0 rounded-25" width="200">
+                    </div>
+
+                    <!-- Available Stores -->
+                    <div class="col-12 flex flex-column">
+                        <label class="text-600 mb-2">Available Stores</label>
+                        <div class="col-12">
+                            <ng-container *ngIf="deal.deal_stores_availables.length > 0; else not_content">
+                                <label *ngFor="let store of deal.deal_stores_availables" class="mr-2 input-readonly">
+                                    {{getStoreName(store.store_id)}}
+                                </label>
+                            </ng-container>
+
+                        </div>
+                    </div>
+
+                    <!-- Type of Offer -->
+                    <div class="col-12">
+                        <label class="text-600 mr-4">Type of Offer</label>
+                        <div class="col-12 flex flex-row">
+                            <!-- Type -->
+                            <div class="col-12 md:col-3 flex flex-column">
+                                <label class="text-600 mb-1"><small>Type</small></label>
+                                <label class="input-readonly">{{ deal.deal_typeOfDeal }}</label>
+                            </div>
+
+                            <!-- Offer -->
+                            <div *ngIf="deal.deal_typeOfDeal == 'offer'" class="col-12 md:col-4 flex flex-column">
+                                <label class="text-600 mb-1"><small>Offer</small></label>
+                                <label class="input-readonly">{{ deal.deal_offer }}</label>
+                            </div>
+                            <!-- Amount -->
+                            <div class="col-12 md:col-3 flex flex-column">
+                                <label class="text-600 mb-1"><small>Amount</small></label>
+                                <label class="input-readonly">
+                                    {{ deal.deal_typeOfDeal === 'discount' ? '%': '$' }} {{ deal.deal_amount }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Type Of Product -->
+                    <div class="col-12 md:col-6 flex flex-column">
+                        <label class="text-600 mb-2">Type of Product</label>
+                        <label *ngIf="deal.deal_typeOfProduct??''.length > 0; else not_content"
+                            class="input-readonly">{{ deal.deal_typeOfProduct }}</label>
+                    </div>
+
+                    <!-- Brand Of Product -->
+                    <div class="col-12 md:col-6 flex flex-column">
+                        <label class="text-600 mb-2">Brand Of Product</label>
+                        <label *ngIf="deal.deal_brandOfProduct??''.length > 0; else not_content" class="input-readonly">
+                            {{ deal.deal_brandOfProduct }}
+                        </label>
+                    </div>
+
+                    <!-- Date Deal -->
+                    <div class="col-12 flex flex-column">
+                        <label class="text-600">Date the Offer</label>
+                        <div class="col-12 flex flex-row">
+                            <!-- Type -->
+                            <div class="col-12 md:col-2 flex flex-column">
+                                <label class="text-600 mb-1"><small>Type</small></label>
+                                <label class="input-readonly">{{ deal.deal_rangeDeal }}</label>
+                            </div>
+
+                            <!-- Start Date -->
+                            <div class="col-12 md:col-5 flex flex-column">
+                                <label class="text-600 mb-1">
+                                    <small>{{ deal.deal_rangeDeal == 'oneday'? 'Date': 'Start Date'}}</small>
+                                </label>
+                                <label class="input-readonly">{{ deal.deal_startDate | date:"MM/d/yy" }}</label>
+                            </div>
+
+                            <!-- End Date -->
+                            <div *ngIf="deal.deal_rangeDeal == 'custom'" class="col-12 md:col-5 flex flex-column">
+                                <label class="text-600 mb-1"><small>End Date</small></label>
+                                <label class="input-readonly">{{ deal.deal_endDate | date:"MM/d/yy" }}</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- URL Deal -->
+                    <div class="col-12 flex flex-column">
+                        <label class="text-600 mb-2">Deal URL</label>
+                        <label *ngIf="deal.deal_url??''.length > 0; else not_content" class="input-readonly">
+                            {{ deal.deal_url }}
+                        </label>
+                    </div>
+
+                    <!-- Channel Deal -->
+                    <div class="col-12 md:col-12 flex flex-column">
+                        <label class="text-600 mb-2">Deal Channels</label>
+                        <!-- Push Notifications -->
+                        <div *ngIf="deal.deal_publish_pushDate; else not_content" class="flex flex-row">
+                            <label class="input-readonly">Push Notification</label>
+                            <label class="ml-2 input-readonly">
+                                {{ deal.deal_publish_pushDate | date:"EEE hh:mm, MM/d/yy" }} 
+                                {{ deal.deal_publish_timeZone }}
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </p-card>
+
+            <p-card class="col-4 mt-2" header="Preview">
+                <app-deal-preview [deal]="deal"></app-deal-preview>
+                <div class="grid flex flex-row-reverse mt-5">
+                    <div class="col-12">
+                        <p-button *ngIf="deal.deal_status == 'saved'" 
+                            label=" Publish" icon="pi pi-mobile" iconPos="right"
+                            [style]="{'width': '100%', 'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}"
+                            [disabled]="!(deal.deal_publish_pushDate && checkValidPublishDate())"
+                            (onClick)="publishDeal()">
+                        </p-button>
+                    </div>
+                </div>
+            </p-card>
+        </div>
+    </p-scrollPanel>
+
+
+</div>
+<!-- End-Panel -->
+
+<ng-template #not_content>
+    <label class="input-readonly not-content">Not Specified</label>
+</ng-template>

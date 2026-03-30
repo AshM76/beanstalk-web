@@ -1,0 +1,22 @@
+<!-- Panel -->
+<div class="grid flex-column" style="height: 100%;">
+    <ngx-spinner bdColor="rgba(40,80,80,0.8)" size="medium" color="#ede854" type="ball-beat" [fullScreen]="true">
+        <p style="color: #ede854"> Loading... </p>
+    </ngx-spinner>
+
+    <p-messages [(value)]="showMessage" [enableService]="false"></p-messages>
+
+    <!-- Title-Panel -->
+    <div class="col-12 pl-4 pt-5 pr-4">
+        <p-breadcrumb [model]="items" [home]="home"></p-breadcrumb>
+    </div>
+
+    <!-- Principal-Panel -->
+    <p-scrollPanel class="ml-4 mr-4" >
+        <p-tabMenu [model]="profileOptions"></p-tabMenu>
+        
+        <router-outlet></router-outlet>        
+    </p-scrollPanel>
+
+</div>
+<!-- End-Panel -->

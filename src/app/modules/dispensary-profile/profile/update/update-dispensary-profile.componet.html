@@ -1,0 +1,63 @@
+<p-toolbar class="ml-4 mr-4 h-5">
+    <div class="p-toolbar-group-left">
+        <label style="font-size:18px; font-weight: 500;">Update Dispensary Profile</label>
+    </div>
+    <div class="p-toolbar-group-right">
+        <p-button label="Cancel" icon="pi pi-times" class="mr-2" [routerLink]="['/dispensary/profile']">
+        </p-button>
+        <p-button *authorized="'edit'" label="Save" icon="pi pi-save" class="mr-2"
+            [style]="{'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}"
+            [disabled]="!dispensaryProfileForm.valid" (onClick)="updateDispensaryProfile()">
+        </p-button>
+    </div>
+</p-toolbar>
+<div class="grid">
+    <p-card class="col-12">
+        <form [formGroup]="dispensaryProfileForm" class="w-100">
+            <div class="grid">
+                <!-- Logo -->
+                <div class="col-2 md:col-2 flex flex-column yBorderGroup">
+                    <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Logo</label>
+                    <p-image *ngIf="!uploadedFileUrl" src="/assets/user-default.jpg" alt="Image" width="150"
+                        [preview]="true" [imageStyle]="{'border-radius':'25px'}"></p-image>
+
+                    <p-image *ngIf="uploadedFileUrl" [src]="uploadedFileUrl" alt="Image" width="150" [preview]="true"
+                        [imageStyle]="{'border-radius':'25px'}"></p-image>
+                </div>
+
+                <div class="col-10 md:col-10 flex flex-column yBorderGroup">
+                    <!-- Name -->
+                    <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Name</label>
+                    <input type="text" pInputText class="input-text" placeholder="Name"
+                        formControlName="dispensary_name" />
+                    <span style="margin-top: 5px;">
+                        <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                            *ngIf="(dispensaryProfileForm.controls['dispensary_name'].errors?.['required'] && dispensaryProfileForm.controls['dispensary_name'].touched)"
+                            text="Name is required"></p-message>
+                    </span>
+                    <br>
+                    <!-- Description -->
+                    <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Description</label>
+                    <input type="text" pInputText class="input-text" placeholder="Description"
+                        formControlName="dispensary_description" />
+                    <span style="margin-top: 5px;">
+                        <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                            *ngIf="(dispensaryProfileForm.controls['dispensary_description'].errors?.['required'] && dispensaryProfileForm.controls['dispensary_description'].touched)"
+                            text="Description is required"></p-message>
+                    </span>
+                    <br>
+                    <!-- License Number -->
+                    <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">License #</label>
+                    <input type="text" pInputText class="input-text" placeholder="License #"
+                        formControlName="dispensary_license" />
+                </div>
+                <div class="col-12 md:col-12 p-4">
+                    <label for="inputgroup">Dispensary Logo <small>(Max. 1Mb)</small></label>
+                    <p-fileUpload name="myImage[]" [customUpload]="true" accept="image/*" [maxFileSize]="1000000"
+                        (uploadHandler)="onUploadImage($event)" [auto]="true" (onRemove)="clearUploadImage()">
+                    </p-fileUpload>
+                </div>
+            </div>
+        </form>
+    </p-card>
+</div>

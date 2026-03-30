@@ -1,0 +1,22 @@
+<!-- Panel -->
+<div class="grid flex-column" style="height: 100%;">
+    <!-- Title-Panel -->
+    <div class="col-12 h-9rem p-7">
+        <h2>
+            <b>Hi {{ name }},</b> your collective data is all set
+        </h2>
+    </div>
+    <!-- Content-Panel -->
+    <div class="col-12 h-screen">
+
+        <div class="grid align-items-center p-5 yBackgroundGray">
+            <p-card class="col-4" header="Profile" [style]="{'height': '15rem', 'cursor': 'pointer'}"
+                [routerLink]="['/dispensary/profile']"></p-card>
+            <p-card class="col-4" header="Chat" [style]="{'height': '15rem', 'cursor': 'pointer'}"
+                [routerLink]="['/chat']"></p-card>
+            <p-card class="col-4" header="Deals" [style]="{'height': '15rem', 'cursor': 'pointer'}"
+                [routerLink]="['/deals']"></p-card>
+        </div>
+    </div>
+</div>
+<!-- End-Panel -->

@@ -1,0 +1,256 @@
+<p-toolbar class="ml-4 mr-4">
+    <div class="p-toolbar-group-left">
+        <label style="font-size:18px; font-weight: 500;">Dispensary Store</label>
+    </div>
+    <div class="p-toolbar-group-right">
+        <p-button label="Cancel" icon="pi pi-times" class="mr-2" [routerLink]="['/dispensary/stores/'+ storeId]">
+        </p-button>
+        <p-button *authorized="'edit'" label="Save" icon="pi pi-save" class="mr-2" (onClick)="saveStoreData()"
+            [disabled]="!dispensaryStoreForm.valid"
+            [style]="{'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}">
+        </p-button>
+    </div>
+</p-toolbar>
+
+<div class="grid" [formGroup]="dispensaryStoreForm">
+    <p-card class="col-12">
+        <p-scrollPanel [style]="{width: '100%', height: '55vh'}">
+            <div class="grid">
+                <div class="grid col-12">
+                    <!-- Image -->
+                    <div class="col-3 flex justify-content-end align-items-center">
+
+                        <div class="col-12 flex justify-content-end align-items-center">
+
+                            <p-image *ngIf="!uploadedFileUrl" src="/assets/deal-default.png" alt="Image" width="250"
+                                [imageStyle]="{'border-radius':'25px'}"></p-image>
+
+                            <p-image *ngIf="uploadedFileUrl" [src]="uploadedFileUrl" alt="Image" width="250"
+                                [imageStyle]="{'border-radius':'25px'}"></p-image>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-9 flex flex-column">
+                        <div class="col-12 flex flex-row">
+
+                            <div class="col-5 flex flex-column">
+                                <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Store Name</label>
+                                <input type="text" pInputText class="input-text" placeholder="Store Name"
+                                    formControlName="store_name" />
+                                <span style="margin-top: 5px;">
+                                    <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                        *ngIf="(dispensaryStoreForm.controls['store_name'].errors?.['required'] && dispensaryStoreForm.controls['store_name'].touched)"
+                                        text="Store Name is required"></p-message>
+                                </span>
+                            </div>
+
+                            <div class="col-5 flex flex-column">
+                                <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Store
+                                    Description</label>
+                                <input type="text" pInputText class="input-text" placeholder="Store Description"
+                                    formControlName="store_description" />
+                            </div>
+                            <div class="col-2 flex flex-column">
+                                <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Available</label>
+                                <p-inputSwitch formControlName="store_available"></p-inputSwitch>
+                            </div>
+
+                        </div>
+
+                        <div class="col-12 flex flex-row">
+
+                            <div class="col-5 flex flex-column">
+                                <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Phone
+                                    Contact</label>
+                                <input type="text" pInputText class="input-text" placeholder="Phone Contact"
+                                    formControlName="store_phone" />
+                            </div>
+
+                            <div class="col-7 flex flex-column">
+                                <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Email
+                                    Contact</label>
+                                <input type="text" pInputText class="input-text" placeholder="Email Contact"
+                                    formControlName="store_email" />
+                                <span style="margin-top: 5px;">
+                                    <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                        *ngIf="(dispensaryStoreForm.controls['store_email'].errors?.['email'] && dispensaryStoreForm.controls['store_email'].touched)"
+                                        text="Format is not valid"></p-message>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image -->
+                <div class="col-12 md:col-12 p-4">
+                    <label for="inputgroup">Store Image <small>(Max. 1Mb)</small></label>
+                    <p-fileUpload name="myImage[]" [customUpload]="true" accept="image/*" [maxFileSize]="1000000"
+                        (uploadHandler)="onUploadImage($event)" [auto]="true" (onRemove)="clearUploadImage()">
+                    </p-fileUpload>
+                </div>
+
+                <div class="col-12 md:col-6 lg:col-6 w-100"
+                    style="display: flex; flex-direction: column; align-items: flex-start;">
+
+                    <div class="col-12 flex flex-row">
+                        <div class="col-6 flex flex-column">
+                            <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Address Line
+                                1</label>
+                            <input type="text" pInputText class="input-text" placeholder="Address Line 1"
+                                formControlName="store_addressLine1" />
+                            <span style="margin-top: 5px;">
+                                <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                    *ngIf="(dispensaryStoreForm.controls['store_addressLine1'].errors?.['required'] && dispensaryStoreForm.controls['store_addressLine1'].touched)"
+                                    text="Address Line 1 is required"></p-message>
+                            </span>
+                        </div>
+
+                        <div class="col-6 flex flex-column">
+                            <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Address Line
+                                2</label>
+                            <input type="text" pInputText class="input-text" placeholder="Address Line 2"
+                                formControlName="store_addressLine2" />
+                        </div>
+                    </div>
+
+                    <div class="col-12 flex flex-row">
+
+                        <div class="col-5 flex flex-column">
+                            <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">City</label>
+                            <input type="text" pInputText class="input-text" placeholder="City"
+                                formControlName="store_city" />
+                            <span style="margin-top: 5px;">
+                                <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                    *ngIf="(dispensaryStoreForm.controls['store_city'].errors?.['required'] && dispensaryStoreForm.controls['store_city'].touched)"
+                                    text="City is required"></p-message>
+                            </span>
+                        </div>
+
+                        <div class="col-5 flex flex-column">
+                            <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">State</label>
+                            <p-dropdown [autoDisplayFirst]="false" placeholder="Select a State" [options]="states"
+                                formControlName="store_state" [required]="true" [showClear]="true">
+                            </p-dropdown>
+                            <span style="margin-top: 5px;">
+                                <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                    *ngIf="(dispensaryStoreForm.controls['store_state'].errors?.['required'] && dispensaryStoreForm.controls['store_state'].touched)"
+                                    text="State is required"></p-message>
+                            </span>
+                        </div>
+
+                        <div class="col-2 flex flex-column">
+                            <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Zip</label>
+                            <input type="text" pInputText class="input-text" placeholder="Zip"
+                                formControlName="store_zip" />
+                            <span style="margin-top: 5px;">
+                                <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                    *ngIf="(dispensaryStoreForm.controls['store_zip'].errors?.['required'] && dispensaryStoreForm.controls['store_zip'].touched)"
+                                    text="Zip is required"></p-message>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6 lg:col-6 w-100"
+                    style="display: flex; flex-direction: column; align-items: flex-start;">
+                    <div class="col-12"
+                        style="display: flex; flex-direction: column; align-items: flex-start; margin-top: 10px;">
+                        <p><i class="pi pi-link"></i> Social Media:</p>
+                    </div>
+
+                    <div class="col-12 flex flex-column">
+                        <div class="col-12 flex flex-column">
+                            <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Website</label>
+                            <input type="text" pInputText class="input-text" placeholder="Website"
+                                formControlName="store_website" />
+                        </div>
+                    </div>
+
+                    <div class="col-12 flex flex-row">
+                        <div class="col-6 flex flex-column">
+                            <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Facebook</label>
+                            <input type="text" pInputText class="input-text" placeholder="Facebook"
+                                formControlName="store_facebook" />
+                        </div>
+
+                        <div class="col-6 flex flex-column">
+                            <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Instagram</label>
+                            <input type="text" pInputText class="input-text" placeholder="Instagram"
+                                formControlName="store_instagram" />
+                        </div>
+                    </div>
+
+                    <div class="col-12 flex flex-row">
+                        <div class="col-6 flex flex-column">
+                            <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Twitter</label>
+                            <input type="text" pInputText class="input-text" placeholder="Twitter"
+                                formControlName="store_twitter" />
+                        </div>
+
+                        <div class="col-6 flex flex-column">
+                            <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Youtube</label>
+                            <input type="text" pInputText class="input-text" placeholder="Youtube"
+                                formControlName="store_youtube" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6 lg:col-6 w-100"
+                    style="display: flex; flex-direction: column; align-items: flex-start;">
+                    <div class="col-12"
+                        style="display: flex; flex-direction: column; align-items: flex-start; margin-top: 10px;">
+                        <p><i class="pi pi-clock"></i> Hours:</p>
+                    </div>
+
+                    <div class="grid w-full ml-2" style="flex-direction: column;" formArrayName="store_hours">
+
+                        <div *ngFor="let storeHour of dispensaryStoreOpenHours.controls; let i = index;" class="col-12 mt-2 p-0">
+
+                            <div class="grid" style="align-items: flex-start;" [formGroupName]="i">
+
+                                <div class="col-6 md:col-6 lg:col-1 p-0" style="display: flex; justify-content: right;">
+                                    <p class="mt-3">{{ storeHour.value.day }}</p>
+                                </div>
+
+                                <div class="col-6 md:col-6 lg:col-1" style="display: flex; justify-content: center;">
+                                    <p-inputSwitch class="mt-1 mr-3" formControlName="selected_day"
+                                        (onChange)="handleStoreOpenHourChange($event.checked, i)"></p-inputSwitch>
+                                </div>
+
+                                <div class="col-12 md:col-5 lg:col-2 p-0"
+                                    style="display: flex; flex-direction: column; align-items: flex-start; justify-content: left;">
+
+                                    <p-calendar [timeOnly]="true" [hourFormat]="'12'" [showIcon]="true"
+                                        icon="pi pi-clock" [readonlyInput]="false" formControlName="opensAt"
+                                        placeholder="08:30 AM"></p-calendar>
+                                    <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                        *ngIf="(dispensaryStoreOpenHours.controls[i].get('opensAt')?.errors?.['required'] && dispensaryStoreOpenHours.controls[i].get('opensAt')?.touched)"
+                                        text="Opens at is required"></p-message>
+                                </div>
+
+                                <div class="col-12 md:col-2 lg:col-1 p-0"
+                                    style="display: flex; justify-content: center;">
+                                    <p class="mt-3">to</p>
+                                </div>
+
+                                <div class="col-12 md:col-5 lg:col-2 p-0"
+                                    style="display: flex; flex-direction: column; align-items: flex-start; justify-content: left;">
+
+                                    <p-calendar [timeOnly]="true" [hourFormat]="'12'" [showIcon]="true"
+                                        icon="pi pi-clock" [readonlyInput]="false" formControlName="closesAt"
+                                        placeholder="08:30 PM"></p-calendar>
+
+                                    <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                        *ngIf="(dispensaryStoreOpenHours.controls[i].get('closesAt')?.errors?.['required'] && dispensaryStoreOpenHours.controls[i].get('closesAt')?.touched)"
+                                        text="Closes at is required"></p-message>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </p-scrollPanel>
+    </p-card>
+</div>

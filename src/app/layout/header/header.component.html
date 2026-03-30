@@ -1,0 +1,24 @@
+<!-- NavigationBar -->
+<div class="grid">
+    <nav class="col-12 one-shadow" style="height: 70px; background: white;">
+        <div class="grid flex-row">
+            <div class="col-8 flex align-items-center pl-7">
+                Dashboard
+            </div>
+            <div class="col-2 flex align-items-center justify-content-end">
+                <div pRipple class="p-ripple.green" [routerLink]="['/chat']">
+                    <i class="pi pi-comments" style="font-size: 1.5rem; margin-right: 15px; color: #E19A3D;"></i>
+                </div>
+            </div>
+            <div class="col-2 flex align-items-center justify-content-start" [style]="{'cursor': 'pointer'}" (click)="menu.toggle($event)">
+                <p-avatar image="/assets/user-default.jpg" styleClass="mr-3" size="small" shape="circle">
+                </p-avatar>
+                <p class="mt-3 mr-2" style="color: #808080; font-size: 14px;"> {{ dispensaryName }}</p>
+                <i class="pi pi-angle-down"></i>
+                <p-menu #menu [popup]="true" [model]="dispensaryAcountMenu"></p-menu>
+            </div>
+        </div>
+
+    </nav>
+</div>
+<!-- End-NavigationBar -->

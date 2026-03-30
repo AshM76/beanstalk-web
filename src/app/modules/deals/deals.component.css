@@ -1,0 +1,30 @@
+.input-readonly {
+    border-style: solid;
+    border-color: #F5F5F5;
+    border-radius: 15px;
+    border-width: 2px;
+    background: #FAFAFA;
+    color: #8C8C8C;
+    padding: 15px 30px;
+}
+
+.not-content {
+    color: #CBCCCE;
+}
+
+:host ::ng-deep .p-chip.deal-status {
+    color: #F8FAFC;
+    font-size: 14px;
+}
+
+:host ::ng-deep .p-chip.deal-saved {
+    background-color: #E19A3D;
+}
+
+:host ::ng-deep .p-chip.deal-published {
+    background-color: #4AA390;
+}
+
+:host ::ng-deep .p-chip.deal-closed {
+    background-color: #DE725F;
+}

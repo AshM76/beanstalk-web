@@ -1,0 +1,168 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    background-color: var(--surface-b);
+    font-family: var(--font-family);
+    height: 100%;
+    overflow: hidden;
+}
+
+.mainBackground {
+    background: url(../src/assets/background_img.png) no-repeat center center fixed;
+    background-size: cover;
+    height: 100%;
+    overflow: hidden;
+}
+
+.text-layout {
+    color: var(--text-color);
+}
+
+.yBackgroundGray {
+    background: #eff3f8;
+}
+
+.yBackgroundGreen {
+    background: #057671;
+}
+
+.yBackgroundWhite {
+    background: #F8FAFC;
+}
+
+.cover {
+    /* background: url(../src/assets/backOnboarding.png) no-repeat center center fixed; */
+    /* background-position: center; */
+    /* background-attachment: fixed; */
+    /* background-size: contain; */
+    /* -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover; */
+    background-size: cover;
+    height: 100%;
+    overflow: hidden;
+}
+
+.one-shadow {
+	-webkit-box-shadow: 0 5px 5px -5px rgb(115, 115, 115);
+	   -moz-box-shadow: 0 5px 5px -5px rgb(115, 115, 115);
+	        box-shadow: 0 5px 5px -5px rgb(115, 115, 115);
+}
+
+
+.p-inputtext {
+    height: 40px;
+}
+
+.p-inputgroup-addon {
+    height: 40px;
+}
+
+.p-dropdown {
+    height: 40px;
+    min-width: 98.5%;
+    position: relative;
+    display: block;
+}
+
+.p-calendar-w-btn {
+    height: 40px;
+}
+
+
+/* ::ng-deep {
+    .p-selectButton .p-button.hi
+} */
+
+
+.yColor1 {
+    background: lightcoral;
+}
+
+.yColor2 {
+    background: lightgreen;
+}
+
+.yColor3 {
+    background: lightgoldenrodyellow;
+}
+
+.yColor4 {
+    background: lightseagreen;
+}
+
+.yColor5 {
+    background: lightskyblue;
+}
+
+.yColor6 {
+    background: lightslategray
+}
+
+
+
+
+.yBorderGroup{
+    border-style: solid;
+    border-color: #F5F5F5;
+    border-radius: 12px;
+    border-width: 0.5px;
+}
+
+.yLabel{
+    border-style: solid;
+    border-color: #F5F5F5;
+    border-radius: 12px;
+    border-width: 2px;
+    background: #FAFAFA;
+    color: #707070;
+    padding: 15px 30px 15px 30px;
+}
+
+.rounded-25{
+    border-radius: 25px;
+}
+.rounded-top-25{
+    border-radius: 25px 25px 0 0;
+}
+
+.rounded-bottom-25{
+    border-radius: 0 0 25px 25px;
+}
+
+.input-text{
+    height: 3.5rem;
+}
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #495057;
+    opacity: 0.3; /* Firefox */
+  }
+  
+  :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: #495057;
+    opacity: 0.3;
+  }
+  
+  ::-ms-input-placeholder { /* Microsoft Edge */
+    color: #495057;
+    opacity: 0.3;
+  }
+
+  ::-webkit-input-placeholder {
+    color: #495057;
+    opacity: 0.3;
+  }
+  
+  :-moz-placeholder {
+    color: #495057;
+    opacity: 0.3;
+  }
+  
+  ::-moz-placeholder {
+    color: #495057;
+    opacity: 0.3;
+  }

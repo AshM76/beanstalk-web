@@ -1,0 +1,192 @@
+<div class="container-fluid h-50">
+    <div class="row justify-content-center h-100">
+        <!-- CONTACT LIST -->
+        <div class="col-md-4 col-xl-3 chat">
+            <div class="card mb-sm-3 mb-md-0 contacts_card">
+                <div class="card-header">
+                    <!-- SEARCH -->
+                    <div class="input-group">
+                        <input type="text" placeholder="Search..." name="" class="form-control search">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text search_btn" style="height: 40px; width: 40px; justify-content: center;"><i class="fas fa-search"></i></span>
+                        </div>
+                    </div>
+                    <!--  -->
+                </div>
+                <div class="card-body contacts_body">
+                    <!-- LISTA DE CONSUMERS -->
+                    <ul class="contacts">
+
+                        <div *ngFor="let chat of chat.chats, index as i">
+                            
+                            <li (click)="selectChat(chat, i)" [ngClass]="{'active': currentIndex == i}">
+                                <div class="flex d-flex bd-highlight">
+                                    
+                                    <div class="col-3 flex flex-column justify-content-center">
+                                        <div class="img_cont">
+                                            <img src="../../../assets/consumer_default.png"
+                                                class="rounded-circle user_img">
+                                            <!-- <span class="online_icon"></span> -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-7 flex flex-column justify-content-center">
+                                        <div class="user_info w-full">
+                                            <span>{{chat.chat_consumer_name}}</span>
+                                            <p>{{chat.chat_lastMessage}}</p>
+                                            <div class="user_info_store" style="font-size: 10px;">Sent to <b>{{chat.chat_store_name}}</b></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-2 flex flex-column justify-content-center">
+                                        
+                                        <div class="user_info">
+                                            <i *ngIf="(chat.chat_unreads > 0)"  class="mt-1" class="pi pi-comment mr-2 p-text-secondary" pBadge style="font-size: 15px; color: #057671;" 
+                                                 severity="danger" value={{chat.chat_unreads}}></i>
+                                            <i *ngIf="(chat.chat_unreads <= 0)"  class="mt-1" class="pi pi-comment" style="font-size: 15px; color: #057671;"></i>
+                                            <p class="mt-1" style="font-size: 9px;">{{ chat.chat_lastDate | date:"hh:mm" }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </li>
+
+                        </div>
+
+                        <!-- <li class="active">
+                            <div class="d-flex bd-highlight">
+                                <div class="img_cont">
+                                    <img src="https://therichpost.com/wp-content/uploads/2020/06/avatar2.png"
+                                        class="rounded-circle user_img">
+                                    <span class="online_icon"></span>
+                                </div>
+                                <div class="user_info">
+                                    <span>jassa</span>
+                                    <p>Kalid is online</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex bd-highlight">
+                                <div class="img_cont">
+                                    <img src="https://therichpost.com/wp-content/uploads/2020/06/avatar2.png"
+                                        class="rounded-circle user_img">
+                                    <span class="online_icon offline"></span>
+                                </div>
+                                <div class="user_info">
+                                    <span>jassa</span>
+                                    <p>Taherah left 7 mins ago</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex bd-highlight">
+                                <div class="img_cont">
+                                    <img src="https://therichpost.com/wp-content/uploads/2020/06/avatar2.png"
+                                        class="rounded-circle user_img">
+                                    <span class="online_icon"></span>
+                                </div>
+                                <div class="user_info">
+                                    <span>jassa Mann</span>
+                                    <p>Sami is online</p>
+                                </div>
+                            </div>
+                        </li> -->
+                        <!-- END LIST CONSUMERS -->
+                    </ul>
+                </div>
+                <div class="card-footer"></div>
+            </div>
+        </div>
+        <!-- END CONTACT LIST -->
+        <!-- CHAT SCREEN -->
+        <div class="col-md-8 col-xl-6 chat">
+            <div class="card">
+                <!-- CONTACT INFO -->
+                <div class="card-header msg_head">
+                    <div class="d-flex bd-highlight">
+                        <div class="grid">
+                            <div class="img_cont">
+                                <img src="../../../assets/consumer_default.png"
+                                    class="rounded-circle user_img">
+                                <!-- <span class="online_icon"></span> -->
+                            </div>
+                            <div class="user_info">
+                                <span>{{currentChat.chat_consumer_name}}</span>
+                                <p>{{currentChat.chat_lastMessage}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- END CONTACT INFO -->
+                <div class="card-body msg_card_body">
+                    
+                    <div *ngFor="let message of chat.messages">
+
+                        <div class="d-flex mb-4"
+                            [ngClass]="{'justify-content-start': message.message_kind === 1, 'justify-content-end': message.message_kind === 2}">
+                                <div
+                                    [ngClass]="{'msg_cotainer': message.message_kind === 1, 'msg_cotainer_send': message.message_kind === 2}">
+                                    {{message.message_content}}
+                                    <div [ngClass]="{'msg_time': message.message_kind === 1, 'msg_time_send': message.message_kind === 2}">
+                                        {{ message.message_date | date:"EEE hh:mm, MM/d/yy" }}
+                                        <div *ngIf="(message.message_kind == 2)" class="msg_owner">
+                                            {{ message.message_owner }}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                        </div>
+
+                    </div>
+
+                    <!-- <div class="d-flex justify-content-start mb-4">
+                        <div class="img_cont_msg">
+                            <img src="https://therichpost.com/wp-content/uploads/2020/06/avatar2.png"
+                                class="rounded-circle user_img_msg">
+                        </div>
+                        <div class="msg_cotainer">
+                            Hi, how are you samim?
+                            <span class="msg_time">8:40 AM, Today</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end mb-4">
+                        <div class="msg_cotainer_send">
+                            Hi jassa i am good tnx how about you?
+                            <span class="msg_time_send">8:55 AM, Today</span>
+                        </div>
+                        <div class="img_cont_msg">
+                            <img src="https://therichpost.com/wp-content/uploads/2020/06/avatar2.png"
+                                class="rounded-circle user_img_msg">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-start mb-4">
+                        <div class="img_cont_msg">
+                            <img src="https://therichpost.com/wp-content/uploads/2020/06/avatar2.png"
+                                class="rounded-circle user_img_msg">
+                        </div>
+                        <div class="msg_cotainer">
+                            I am good too, thank you for your chat template
+                            <span class="msg_time">9:00 AM, Today</span>
+                        </div>
+                    </div> -->
+
+                </div>
+                <!-- CONTROLES DE ENVIO -->
+                <div *ngIf="(chat.messages.length > 0)" class="card-footer">
+
+                        <form class="input-group"(submit)="sendMessage()">
+                            <input [(ngModel)]="text" [ngModelOptions]="{standalone:true}" class="form-control type_msg" placeholder="Type your message...">
+                            <div class="input-group-append">
+                                <span class="input-group-text send_btn" (click)="sendMessage()" style="height: 60px; width: 60px; justify-content: center;"><i class="fas fa-location-arrow"></i></span>
+                            </div>
+                        </form>
+                        
+                </div>
+                <!-- END - CONTROLES -->
+            </div>
+        </div>
+    </div>
+    <ngx-spinner bdColor = "rgba(40,80,80,0.8)" size = "medium" color = "#ede854" type = "ball-beat" [fullScreen] = "false"><p style="color: #ede854" > Loading... </p></ngx-spinner>
+</div>

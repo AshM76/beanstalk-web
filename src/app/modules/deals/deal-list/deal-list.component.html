@@ -1,0 +1,60 @@
+<!-- Panel -->
+<div class="grid flex-column" style="height: 100%;">
+    <ngx-spinner bdColor="rgba(40,80,80,0.8)" size="medium" color="#ede854" type="ball-beat" [fullScreen]="true">
+        <p style="color: #ede854"> Loading... </p>
+    </ngx-spinner>
+    
+    <!-- Title-Panel -->
+    <div class="col-12 pl-4 pt-5 pr-4">
+        <p-breadcrumb [model]="items" [home]="home"></p-breadcrumb>
+    </div>
+
+    <p-toolbar class="ml-4 mr-4">
+        <div class="p-toolbar-group-left">
+            <label style="font-size:20px;"><b>Deals of Dispensary</b></label>
+        </div>
+        <div class="p-toolbar-group-right">
+            <p-button label="New" icon="pi pi-plus" class="mr-2" [routerLink]="['/deals/create']"
+                [style]="{'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}">
+            </p-button>
+        </div>
+    </p-toolbar>
+
+    <!-- Content-Panel -->
+    <p-scrollPanel class="ml-4 mr-4 mt-2" styleClass="custom" [style]="{height: '600px'}">
+        <p-card>
+            <p-table [value]="deals" responsiveLayout="scroll" selectionMode="single">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Type Of Deal</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-deal>
+                    <tr [pSelectableRow]="deal" [routerLink]="['/deals/detail/' + deal.deal_id]">
+                        <td><img [src]="deal.deal_imageURL" width="100" class="shadow-2" /></td>
+                        <td>{{deal.deal_title}}</td>
+                        <td>{{deal.deal_typeOfDeal}}</td>
+                        <td>{{deal.deal_typeOfDeal === 'discount' ? '%': '$' }} {{deal.deal_amount}}</td>
+                        <td *ngIf="deal.deal_status != 'saved'">{{deal.deal_startDate | date:"MM/d/yy" }}</td>
+                        <td *ngIf="deal.deal_status == 'saved'">-</td>
+                        <td>
+                            <p-chip [styleClass]="'mr-2 deal-status deal-' + deal.deal_status"
+                                label={{deal.deal_status}}></p-chip>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="summary">
+                    <div class="flex align-items-center justify-content-between">
+                        In total there are {{deals.length }} deals.
+                    </div>
+                </ng-template>
+            </p-table>
+        </p-card>
+    </p-scrollPanel>
+</div>
+<!-- End-Panel -->

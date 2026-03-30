@@ -1,0 +1,33 @@
+<!-- SideBar -->
+<section class="col-fixed yBackgroundGreen" >
+
+    <div class="grid flex-column">
+        <!-- Icon -->
+        <div class="col-12 flex justify-content-center mt-2">
+            <img src="/assets/logo_beanstalk_horizontal.png" width="150px">
+        </div>
+
+
+        <!-- Menu -->
+        <div class="col-12 mt-5">
+            <div class="grid">
+                <div class="col-12 p-4">
+                    <p style="color: #fbff14; font-size: 14px;" [routerLink]="['/dashboard']"><b>Dashboard</b></p>
+                    <p class="mt-3 ml-6" style="color: #ffffff; font-size: 14px; margin-top: 15px;cursor: pointer;" [routerLink]="['/dispensary/profile']">Profile</p>
+                    <p class="mt-3 ml-6" style="color: #ffffff; font-size: 14px; margin-top: 15px;cursor: pointer;" [routerLink]="['/deals']">Deals</p>
+                    <p class="mt-3 ml-6" style="color: #ffffff; font-size: 14px; margin-top: 15px;cursor: pointer;" [routerLink]="['/chat']">Chat</p>
+                </div>
+            </div>
+        </div>        
+
+        <!-- Footer -->
+        <div class="flex justify-content-center position-absolute bottom-0 mx-4">
+            <div pRipple class="p-ripple.orange flex-wrap">
+                <small style="color: #ffffff;"> &copy; 2022 Beanstalk,Inc. -</small>
+                <small style="color: #E19A3D;"> {{version}}</small>
+            </div>
+        </div>        
+    </div>
+
+</section>
+<!-- End-Sidebar -->

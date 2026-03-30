@@ -1,0 +1,255 @@
+<!-- Panel -->
+<div class="grid flex-column" style="height: 100%;">
+    <ngx-spinner bdColor="rgba(40,80,80,0.8)" size="medium" color="#ede854" type="ball-beat" [fullScreen]="true">
+        <p style="color: #ede854"> Loading... </p>
+    </ngx-spinner>
+    <p-messages [(value)]="showMessage" [enableService]="false"></p-messages>
+    <!-- Title-Panel -->
+    <div class="col-12 pl-4 pt-5 pr-4">
+        <p-breadcrumb [model]="items" [home]="home"></p-breadcrumb>
+    </div>
+
+    <p-toolbar class="ml-4 mr-4">
+        <div class="p-toolbar-group-left">
+            <label style="font-size:20px;"><b> {{ !update ? 'Create Deal': 'Update of Deal'}}</b></label>
+        </div>
+        <div class="p-toolbar-group-right">
+            <p-button label="Cancel" icon="pi pi-times" class="mr-2" [routerLink]="['/deals']">
+            </p-button>
+            <p-button [label]="dealForm.controls['deal_status'].value === 'saved' ? 'Save': 'Update'" icon="pi pi-save"
+                class="mr-2" [style]="{'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}"
+                (onClick)="saveDeal()" [disabled]="!(dealForm.valid)"></p-button>
+        </div>
+    </p-toolbar>
+
+    <!-- Content-Panel -->
+    <p-scrollPanel class="ml-4 mr-4" styleClass="custom" [style]="{height: '600px'}">
+
+        <div class="grid" [formGroup]="dealForm">
+            <p-card class="col-8 mt-2" header="Deal">
+                <div class="grid">
+
+                    <!-- Title -->
+                    <div class="col-12 flex flex-column">
+                        <label>Title</label>
+                        <input pInputText type="text" id="inputgroupTitle" maxlength="30" formControlName="deal_title">
+                        <p-message class="flex justify-content-end" severity="error" [style]="{height: '20px'}"
+                            *ngIf="(dealForm.controls['deal_title'].errors?.['required'] && dealForm.controls['deal_title'].touched)"
+                            text="Title is required">
+                        </p-message>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="col-12 flex flex-column">
+                        <label for="inputgroup">Description</label>
+                        <textarea pInputTextarea class="h-4rem" rows="5" cols="30"
+                            formControlName="deal_description"></textarea>
+                        <p-message class="flex justify-content-end" severity="error" [style]="{height: '20px'}"
+                            *ngIf="(dealForm.controls['deal_description'].errors?.['required'] && dealForm.controls['deal_description'].touched)"
+                            text="Description is required">
+                        </p-message>
+                    </div>
+
+                    <!-- Image -->
+                    <div class="col-12 flex flex-column">
+                        <label>Image <small>(Max. 1Mb)</small></label>
+                        <p-fileUpload name="myImage[]" [customUpload]="true" accept="image/*" [maxFileSize]="1000000"
+                            (uploadHandler)="onUploadImage($event)" [auto]="true" (onRemove)="clearUploadImage()">
+                        </p-fileUpload>
+                    </div>
+
+                    <!-- Availables Stores-->
+                    <div class="col-12 flex flex-column">
+                        <label for="inputgroup">Available Stores</label>
+                        <p-multiSelect [options]="availableStores" formControlName="deal_stores_availables"
+                            class="w-100" defaultLabel="Select a Store" autoWidth="false" [style]="{'minWidth':'100%'}"
+                            optionLabel="store_name" optionValue="store_id" display="chip"></p-multiSelect>
+
+                        <p-message class="flex justify-content-end" severity="error" [style]="{height: '20px'}"
+                            *ngIf="(dealForm.controls['deal_stores_availables'].errors?.['required'] && dealForm.controls['deal_stores_availables'].touched)"
+                            text="Store is required">
+                        </p-message>
+                    </div>
+
+                    <!-- Type of Offer -->
+                    <div class="col-12 flex flex-column">
+                        <label class="inputgroup">Type Of Offer</label>
+                        <div class="col-12">
+                            <p-selectButton [options]="typeOfDeals" optionLabel="label" optionValue="code"
+                                formControlName="deal_typeOfDeal" (onChange)="handleTypeOfDeal($event.value)">
+                            </p-selectButton>
+                        </div>
+                    </div>
+
+
+                    <div class="col-12 flex flex-row">
+                        <!-- Offer -->
+                        <div *ngIf="dealForm.controls['deal_typeOfDeal'].value === 'offer'"
+                            class="col-6 flex flex-column">
+                            <label>Offer</label>
+                            <input pInputText type="text" formControlName="deal_offer">
+                            <p-message
+                                *ngIf="(dealForm.controls['deal_offer'].errors?.['required'] && dealForm.controls['deal_offer'].touched)"
+                                class="flex justify-content-end" severity="error" [style]="{height: '20px'}"
+                                text="Offer is required">
+                            </p-message>
+                        </div>
+
+                        <!-- Amount -->
+                        <div class="col-6">
+                            <label>{{ AmountTitle }}</label>
+                            <div class="p-inputgroup">
+                                <span class="p-inputgroup-addon">{{ AmountSymbol }}</span>
+                                <input pInputText type="text" maxlength="2" formControlName="deal_amount">
+                            </div>
+                            <p-message
+                                *ngIf="(dealForm.controls['deal_amount'].errors?.['pattern'] && dealForm.controls['deal_amount'].touched)"
+                                class="flex justify-content-end" severity="error" [style]="{height: '20px'}"
+                                text="only numbes allowed">
+                            </p-message>
+                            <p-message
+                                *ngIf="(dealForm.controls['deal_amount'].errors?.['required'] && dealForm.controls['deal_amount'].touched)"
+                                class="flex justify-content-end" severity="error" [style]="{height: '20px'}"
+                                text="{{ AmountSymbol }} is required">
+                            </p-message>
+                        </div>
+                    </div>
+
+                    <!-- Type Of Product -->
+                    <div class="col-6 flex flex-column">
+                        <label>Type of Product <small>(Optional)</small> </label>
+                        <p-dropdown [options]="typeOfProducts" formControlName="deal_typeOfProduct"
+                            placeholder="Select Type of product" [showClear]="false">
+                        </p-dropdown>
+                    </div>
+
+                    <!-- Brand Of Product -->
+                    <div class="col-6 flex flex-column">
+                        <label>Brand of Product <small>(Optional)</small> </label>
+                        <input pInputText type="text" formControlName="deal_brandOfProduct">
+                    </div>
+
+                    <!-- Date Deal -->
+                    <div class="col-12 flex flex-column">
+                        <label>Date the Offer is Valid</label>
+                        <div class="col-12 flex flex-row">
+                            <!-- Type -->
+                            <div class="col-12 md:col-4 pt-0 flex flex-column">
+                                <label class="text-600"><small>Type</small></label>
+                                <p-selectButton [options]="typeOfferDate" optionLabel="label" optionValue="code"
+                                    formControlName="deal_rangeDeal" (onChange)="handleTypeOfferDate($event.value)">
+                                </p-selectButton>
+                            </div>
+
+                            <!-- Start Date -->
+                            <div class="col-12 md:col-4 pt-0 field flex flex-column">
+                                <label><small>
+                                        {{dealForm.controls['deal_rangeDeal'].value === 'custom' ? 'Start Date' : 'Date'
+                                        }}
+                                    </small></label>
+                                <p-calendar [showIcon]="true" [readonlyInput]="true" formControlName="deal_startDate"
+                                    [minDate]="today" (onSelect)="handleStartDate($event)">
+                                </p-calendar>
+                            </div>
+
+                            <!-- End Date -->
+                            <div *ngIf="dealForm.controls['deal_rangeDeal'].value === 'custom'"
+                                class="col-12 md:col-4 pt-0 field flex flex-column">
+                                <label><small>End Date</small></label>
+                                <p-calendar [showIcon]="true" [readonlyInput]="true" formControlName="deal_endDate"
+                                    [minDate]="minEndDate" (onSelect)="handleEndDate($event)">
+                                </p-calendar>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- URL Deal -->
+                    <div class="col-12 flex flex-column">
+                        <label>Deal URL <small>(Optional)</small> </label>
+                        <input pInputText type="text" formControlName="deal_url">
+                        <p-message
+                            *ngIf="(dealForm.controls['deal_url'].errors?.['pattern'] && dealForm.controls['deal_url'].touched)"
+                            class="flex justify-content-end" severity="error" [style]="{height: '20px'}"
+                            text="Invalid URL">
+                        </p-message>
+                    </div>
+
+                    <!-- Channel Deal -->
+                    <div class="col-12 flex flex-column">
+                        <label>Which channel do you want to use?</label>
+                        <!-- Push Notifications -->
+                        <div class="col-12 flex flex-row field-checkbox mt-4 h-2rem">
+                            <div *ngIf="dealForm.controls['deal_status'].value === 'published'"
+                                class="col-12 flex flex-row">
+                                <label class="input-readonly">Push Notification</label>
+                                <label class="ml-2 input-readonly">
+                                    {{dealForm.controls['deal_publish_pushDate'].value | date:"EEE hh:mm, MM/d/yy"}} -
+                                    {{dealForm.controls['deal_publish_timeZone'].value }}
+                                </label>
+                            </div>
+                            <ng-container *ngIf="dealForm.controls['deal_status'].value === 'saved'">
+                                <div class="col-4 ml-0">
+                                    <p-checkbox [binary]="true" inputId="notification" #notification
+                                        formControlName="deal_publish_pushNotification"
+                                        (onChange)="handlePushNotification($event.checked)">
+                                    </p-checkbox>
+                                    <label for="notification" class="ml-1">Push Notification</label>
+                                </div>
+                                <ng-container *ngIf="notification.model">
+                                    <p-calendar class="col-4 field-checkbox mt-3" [readonlyInput]="true"
+                                        [showIcon]="true" [showTime]="true" [showSeconds]="false" hourFormat="12"
+                                        formControlName="deal_publish_pushDate" [minDate]="minPushDate"
+                                        [maxDate]="maxPushDate">
+                                    </p-calendar>
+
+                                    <p-dropdown class="col-4 field-checkbox mt-3" [options]="timeZones"
+                                        optionLabel="name" optionValue="code" formControlName="deal_publish_timeZone"
+                                        placeholder="Select Time Zone" [showClear]="false">
+                                    </p-dropdown>
+                                </ng-container>
+                            </ng-container>
+
+
+                        </div>
+
+                        <div class="col-12 flex flex-row field-checkbox mt-1 h-2rem">
+                            <div class="col-4 ml-0">
+                                <p-checkbox [binary]="true" inputId="sms" [disabled]="true">
+                                </p-checkbox>
+                                <label class="ml-1" style="color: lightgray">SMS</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 flex flex-row field-checkbox mt-1 h-2rem">
+                            <div class="col-4 ml-0">
+                                <p-checkbox [binary]="true" inputId="email" [disabled]="true">
+                                </p-checkbox>
+                                <label class="ml-1" style="color: lightgray">Email</label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </p-card>
+
+            <p-card class="col-4 mt-2" header="Preview">
+                <app-deal-preview [deal]="dealForm.value"></app-deal-preview>
+                <div class="grid flex flex-row-reverse mt-5">
+                    <div class="col-12">
+                        <p-button *ngIf="dealForm.controls['deal_status'].value == 'saved'" label="Publish"
+                            icon="pi pi-mobile" iconPos="right"
+                            [style]="{'width': '100%', 'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}"
+                            [disabled]="!(canPublish())" (onClick)="saveDeal('published')">
+                        </p-button>
+                    </div>
+
+                </div>
+
+            </p-card>
+
+        </div>
+
+    </p-scrollPanel>
+
+</div>
+<!-- End-Panel -->

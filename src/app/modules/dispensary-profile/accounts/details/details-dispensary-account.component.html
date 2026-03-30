@@ -1,0 +1,53 @@
+<p-toolbar class="ml-4 mr-4 h-5">
+    <div class="p-toolbar-group-left">
+        <label style="font-size:18px; font-weight: 500;">Dispensary Accounts</label>
+    </div>
+    <div class="p-toolbar-group-right">
+        <p-button label="Back" icon="pi pi-arrow-circle-left" class="mr-2" [routerLink]="['/dispensary/accounts']">
+        </p-button>
+        <p-button *authorized="'edit'" label="Edit" icon="pi pi-pencil" class="mr-2"
+            [routerLink]="['/dispensary/accounts/'+account.dispensary_account_id+'/edit']"
+            [style]="{'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}">
+        </p-button>
+
+    </div>
+</p-toolbar>
+<div class="grid">
+    <p-card class="col-12">
+        <div class="grid">
+            <div pRipple class="col-12 yBorderGroup green mb-4">
+
+                <div class="col-12 flex flex-row">
+                    <div class="col-6 flex flex-column">
+                        <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Name</label>
+                        <label class="yLabel" style="padding: 0.75rem;"> {{account.dispensary_account_fullname}}
+                        </label>
+                    </div>
+
+                    <div class="col-6 flex flex-column">
+                        <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Store</label>
+                        <label class="yLabel" style="padding: 0.75rem;">{{ account.dispensary_account_store.store_name
+                            }}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-12 flex flex-row">
+                    <div class="col-6 flex flex-column">
+                        <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Email</label>
+                        <label class="yLabel" style="padding: 0.75rem;"> {{account.dispensary_account_email}}
+                        </label>
+                    </div>
+                    <div class="col-6 flex flex-column">
+                        <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Password</label>
+                        <label class="yLabel" style="padding: 0.75rem;">
+                            <span style="font-size:8px;">
+                                &#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </p-card>
+</div>

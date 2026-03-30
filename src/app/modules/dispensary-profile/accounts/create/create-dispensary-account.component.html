@@ -1,0 +1,91 @@
+<p-toolbar class="ml-4 mr-4 h-5">
+    <div class="p-toolbar-group-left">
+        <label style="font-size:18px; font-weight: 500;">Dispensary Secondary Account</label>
+    </div>
+    <div class="p-toolbar-group-right">
+        <p-button label="Cancel" icon="pi pi-times" class="mr-2" [routerLink]="['/dispensary/accounts/']">
+        </p-button>
+        <p-button *authorized="'add'" label="Save" icon="pi pi-save" class="mr-2" (onClick)="saveDispensaryAccount()"
+            [disabled]="!dispensaryAccountForm.valid"
+            [style]="{'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}">
+        </p-button>
+
+    </div>
+</p-toolbar>
+<div class="grid">
+    <p-card class="col-12">
+        <p-scrollPanel [style]="{width: '100%', height: '55vh'}">
+            <div class="grid" [formGroup]="dispensaryAccountForm">
+                <div pRipple class="col-12 yBorderGroup green mb-4">
+                    <h6>Secondary Account</h6>
+                    <div class="col-12 flex flex-row">
+                        <div class="col-6 flex flex-column">
+                            <label class="text-800 ml-2" style="font-size:13px;">Account Name</label>
+                            <input type="text" pInputText class="input-text" placeholder="Account Fullname"
+                                formControlName="dispensary_account_fullname" />
+                            <span style="margin-top: 5px;">
+                                <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                    *ngIf="(dispensaryAccountForm.controls['dispensary_account_fullname'].errors?.['required'] && dispensaryAccountForm.controls['dispensary_account_fullname'].touched)"
+                                    text="Account Name is required"></p-message>
+                            </span>
+                        </div>
+
+                        <div class="col-4 flex flex-column">
+                            <label class="text-800 ml-2" style="font-size:13px;">Account Store</label>
+                            <p-dropdown [autoDisplayFirst]="false" placeholder="Select a Store" [options]="stores"
+                                optionLabel="store_name" optionValue="store_id"
+                                formControlName="dispensary_account_store" [required]="true" [showClear]="true">
+                            </p-dropdown>
+                            <span style="margin-top: 5px;">
+                                <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                    *ngIf="(dispensaryAccountForm.controls['dispensary_account_store'].errors?.['required'] && dispensaryAccountForm.controls['dispensary_account_store'].touched)"
+                                    text="Account Store is required"></p-message>
+                            </span>
+                        </div>
+                        <div class="col-2 flex flex-column">
+                            <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Available</label>
+                            <p-inputSwitch formControlName="dispensary_account_available"></p-inputSwitch>
+                        </div>
+                    </div>
+
+                    <div class="col-12 flex flex-row">
+                        <div class="col-6 flex flex-column">
+                            <label class="text-800 ml-2" style="font-size:13px;">Account Email</label>
+                            <input type="text" pInputText class="input-text" placeholder="Email"
+                                formControlName="dispensary_account_email" />
+                            <span style="margin-top: 5px;">
+                                <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                    *ngIf="(dispensaryAccountForm.controls['dispensary_account_email'].errors?.['required'] && dispensaryAccountForm.controls['dispensary_account_email'].touched)"
+                                    text="Account Email is required"></p-message>
+
+
+                                <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                    *ngIf="(dispensaryAccountForm.controls['dispensary_account_email'].errors?.['email'] && dispensaryAccountForm.controls['dispensary_account_email'].touched)"
+                                    text="Format is invalid"></p-message>
+
+                                <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                    *ngIf="(dispensaryAccountForm.controls['dispensary_account_email'].errors?.['already'] && dispensaryAccountForm.controls['dispensary_account_email'].touched)"
+                                    text="Email already exists"></p-message>
+                            </span>
+
+                        </div>
+
+                        <div class="col-6 flex flex-column">
+                            <label class="text-800 ml-2" style="font-size:13px;">Account Password</label>
+                            <input type="password" pInputText class="input-text" placeholder="Password"
+                                formControlName="dispensary_account_password" />
+
+                            <span style="margin-top: 5px;">
+                                <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                                    *ngIf="(dispensaryAccountForm.controls['dispensary_account_password'].errors?.['required'] && dispensaryAccountForm.controls['dispensary_account_password'].touched)"
+                                    text="Password is required"></p-message>
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </p-scrollPanel>
+    </p-card>
+</div>

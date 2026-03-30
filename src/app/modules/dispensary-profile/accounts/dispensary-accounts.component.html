@@ -1,0 +1,80 @@
+<p-toolbar class="ml-4 mr-4 h-5">
+    <div class="p-toolbar-group-left">
+        <label style="font-size:18px; font-weight: 500;">Dispensary Accounts</label>
+    </div>
+    <div class="p-toolbar-group-right" *authorized="'add'">
+        <p-button label="New" icon="pi pi-plus" class="mr-2" [routerLink]="['/dispensary/accounts/add']"
+            [style]="{'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}">
+        </p-button>
+
+    </div>
+</p-toolbar>
+<div class="grid">
+    <p-card class="col-12">
+        <p-scrollPanel [style]="{width: '100%', height: '55vh'}">
+        <div class="grid">
+            <h6 class="ml-2 pt-1">Main Account</h6>
+            <div pRipple class="col-12 yBorderGroup green mb-4 ml-2">
+                <div class="col-12 flex flex-row">
+                    <div class="col-6 flex flex-column">
+                        <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Name</label>
+                        <label class="yLabel" style="padding: 0.75rem;"> {{mainAccount.dispensary_account_fullname}}
+                        </label>
+                    </div>
+
+                    <div class="col-4 flex flex-column">
+                        <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Email</label>
+                        <label class="yLabel" style="padding: 0.75rem;"> {{mainAccount.dispensary_account_email}}
+                        </label>
+                    </div>
+
+                    <div class="col-1 flex flex-column">
+                        <p-button label="Details" class="mt-4" icon="pi pi-eye" [disabled]="true">
+                        </p-button>
+                    </div>
+                </div>
+            </div>
+
+            <h6 class="ml-2">Secondary Accounts</h6>
+            <ng-container *ngIf="secondaryAccounts.length > 0 else empty">
+                <div pRipple class="col-12 yBorderGroup green mb-4 ml-2" *ngFor="let account of secondaryAccounts">
+                    <div class="col-12 flex flex-row">
+                        <div class="col-4 flex flex-column">
+                            <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Name</label>
+                            <label class="yLabel" style="padding: 0.75rem;"> {{account.dispensary_account_fullname}}
+                            </label>
+                        </div>
+
+                        <div class="col-3 flex flex-column">
+                            <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Email</label>
+                            <label class="yLabel" style="padding: 0.75rem;"> {{account.dispensary_account_email}}
+                            </label>
+                        </div>
+
+                        <div class="col-3 flex flex-column">
+                            <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">Store</label>
+                            <label class="yLabel" style="padding: 0.75rem;"> {{account.dispensary_account_store.store_name}}
+                            </label>
+                        </div>
+
+                        <div class="col-2 flex flex-column" *authorized="'details'">
+                            <p-button label="Details" class="mt-4" icon="pi pi-eye"
+                                [routerLink]="['/dispensary/accounts/' + account.dispensary_account_id]">
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-template #empty>
+                <div class="col-12 flex flex-row">
+                    <div class="col-12 flex flex-column">
+                        <label class="yLabel" style="padding: 0.75rem;">
+                            Does not have secondary accounts
+                        </label>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    </p-scrollPanel>
+    </p-card>
+</div>

@@ -1,0 +1,99 @@
+<section class="grid mainBackground"
+    style="height: 100%; align-items: center; flex-direction: row; margin: 0; padding: 0;">
+    <div class="col-1 md:col-3 lg:col-4"></div>
+    <p-card class="col-10 md:col-6 lg:col-4">
+
+        <div style="display: flex; flex-direction: column; align-items: center;">
+
+            <img alt="Beanstalk" src="/assets/logo_beanstalk.png" width="120px"
+                style="background-size: cover; height: 100%; margin-top: -10px;">
+
+        </div>
+
+        <div style="margin-top: 10px;">
+            <h1 style="color: #057671; font-size: 30px;">Sign In</h1>
+        </div>
+        <form class="form" [formGroup]="signInForm">
+            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+
+                <div class="p-inputgroup" style="margin-top: 25px;">
+                    <span class="p-inputgroup-addon">
+                        <i class="pi pi-user"></i>
+                    </span>
+                    <span class="p-float-label">
+                        <input pInputText type="email" class="mr-2" formControlName="dispensary_email" />
+                        <label for="inputgroup">Email</label>
+                    </span>
+                </div>
+
+                <span style="margin-top: 5px;">
+                    <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                        *ngIf="(signInFormControl['dispensary_email'].errors?.['required'] && signInFormControl['dispensary_email'].touched)"
+                        text="Email is required"></p-message>
+                    <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                        *ngIf="(signInFormControl['dispensary_email'].errors?.['email'] && signInFormControl['dispensary_email'].touched)"
+                        text="Format is invalid"></p-message>
+                </span>
+
+                <div class="p-inputgroup" style="margin-top: 25px;">
+                    <span class="p-inputgroup-addon">
+                        <i class="pi pi-lock"></i>
+                    </span>
+                    <span class="p-float-label">
+                        <input pInputText type="password" class="mr-2" formControlName="dispensary_password" />
+                        <label for="inputgroup">Password</label>
+                    </span>
+                </div>
+
+                <span style="margin-top: 5px;">
+                    <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                        *ngIf="(signInFormControl['dispensary_password'].errors?.['required'] && signInFormControl['dispensary_password'].touched)"
+                        text="Password is required">
+                    </p-message>
+                    <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
+                        *ngIf="(signInFormControl['dispensary_password'].errors?.['pattern'] && signInFormControl['dispensary_password'].touched)"
+                        text="Password must be at least 6 characters"></p-message>
+                </span>
+            </div>
+
+            <div style="margin-top: 10px;">
+                <a style="font-size: 14px; color: #E19A3D; text-decoration: none;"
+                    [routerLink]="['/reset-password']">Forgot Password?</a>
+            </div>
+
+            <div class="grid" style="margin-top: 10px;">
+                <div class="col-12 md:col-6">
+                        <p-checkbox  label="Remember me" [binary]="true" inputId="remember_me"
+                        formControlName="remember_me"></p-checkbox>
+                </div>
+                <div class="col-12 md:col-6">
+                    <button pButton type="button"
+                        [style]="{height: '50px', width: '100%', background: '#E19A3D', border: 'none'}" label="Log In"
+                        icon="pi pi-angle-right" iconPos="right" [disabled]="!signInForm.valid" (click)="SignIn()">
+                    </button>
+                </div>
+            </div>
+        </form>
+        <div *ngIf="showError" style="margin-top: 5px; display: flex; justify-content: flex-end;">
+            <p-message severity="error" [style]="{height: '20px'}" [text]="messageError"></p-message>
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: center; margin-top: 25px">
+
+            <h5 style="font-size: 15px; color: #057671;">Don't have an account? <a
+                    style="font-size: 17px; color: #E19A3D; text-decoration: none;" [routerLink]="['/sign-up']">Join
+                    Us</a></h5>
+
+            <small style="margin-top: 10px; color: #057671;">By continuing you're agreeing to our</small>
+            <small style="color: #057671;">privacy policy and terms of service</small>
+            <br>
+            <small style="color: #717477; margin-top: 20px;">&copy; 2022 Beanstalk,Inc.</small>
+
+        </div>
+
+        <ngx-spinner bdColor="rgba(40,80,80,0.8)" size="medium" color="#ede854" type="ball-beat" [fullScreen]="true">
+            <p style="color: #ede854"> Loading... </p>
+        </ngx-spinner>
+    </p-card>
+    <div class="col-1 md:col-3 lg:col-4"></div>
+</section>

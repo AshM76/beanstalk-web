@@ -1,0 +1,132 @@
+<div class="col-12 flex flex-column justify-content-center align-items-center">
+
+    <div class="col-12 pb-0 flex justify-content-center">
+        <img *ngIf="deal.deal_imageURL" [src]="deal.deal_imageURL" class="mb-0 rounded-top-25" width="280">
+        <img *ngIf="!deal.deal_imageURL" src="/assets/deal-default.png" class="mb-0 rounded-top-25" width="280">
+    </div>
+    <div class="col-12 flex flex-row one-shadow rounded-bottom-25"
+        style="background: white; height: 80px; width: 280px;">
+        <div class="grid">
+            <div class="col-12" style="height: 80px; width: 280px;">
+
+                <div [ngSwitch]="deal.deal_typeOfDeal" class="grid flex flex-row align-items-center">
+
+                    <!-- Discount -->
+                    <ng-container *ngSwitchCase="'discount'">
+                        <div class="col-6 flex flex-row justify-content-center align-items-center h-5rem">
+                            <label style="font-size: 55px; font-weight: 700;">
+                                {{ deal.deal_amount }}
+                            </label>
+                            <div class="flex flex-column justify-content-center" style="margin-top: -20px;">
+                                <label class="mt-3" style="font-size: 30px; font-weight: 700;">%</label>
+                                <label style="font-size: 15px; font-weight: 700; margin-top: -10px;">OFF</label>
+                            </div>
+                        </div>
+
+                        <div class="col-6 flex flex-column justify-content-center align-items-center h-5rem">
+                            <label style="font-size: 17px; font-weight: 600;">
+                                {{ deal.deal_title}}
+                            </label>
+                        </div>
+                    </ng-container>
+
+                    <!-- Dollar -->
+                    <ng-container *ngSwitchCase="'dollar'">
+                        <div class="col-6 flex flex-row justify-content-center align-items-center h-5rem">
+                            <label class="mb-3" style="font-size: 30px; font-weight: 700;">$</label>
+                            <label style="font-size: 55px; font-weight: 700;">
+                                {{ deal.deal_amount }}
+                            </label>
+                            <label style="font-size: 20px; font-weight: 700; margin-top: -10px;">OFF</label>
+                        </div>
+
+                        <div class="col-6 flex flex-column justify-content-center align-items-center h-5rem">
+                            <label style="font-size: 17px; font-weight: 600;">
+                                {{ deal.deal_title }}
+                            </label>
+                        </div>
+                    </ng-container>
+
+                    <!-- BOGO -->
+                    <ng-container *ngSwitchCase="'bogo'">
+                        <div class="col-7 flex flex-column justify-content-center align-items-center h-5rem">
+                            <label style="font-size: 40px; font-weight: 700; margin-top: -5px;">BOGO</label>
+                            <label style="font-size: 15px; font-weight: 600; margin-top: -15px;">
+                                BUY 1 GET 1
+                            </label>
+                        </div>
+
+                        <div class="col-5 flex flex-row justify-content-center align-items-center h-5rem">
+                            <label class="mb-3" style="font-size: 15px; font-weight: 600;">
+                                FOR
+                            </label>
+                            <label class="ml-1 mb-3" style="font-size: 20px; font-weight: 700;">$</label>
+                            <label style="font-size: 40px; font-weight: 700;">
+                                {{ deal.deal_amount }}
+                            </label>
+                        </div>
+                    </ng-container>
+
+                    <!-- B2G1 -->
+                    <ng-container *ngSwitchCase="'b2g1'">
+                        <div class="col-7 flex flex-column justify-content-center align-items-center h-5rem">
+                            <label style="font-size: 40px; font-weight: 700; margin-top: -5px;">
+                                B2G1
+                            </label>
+                            <label style="font-size: 15px; font-weight: 600; margin-top: -15px;">
+                                BUY 2 GET 1
+                            </label>
+                        </div>
+
+                        <div class="col-5 flex flex-row justify-content-center align-items-center h-5rem">
+                            <label class="mb-3" style="font-size: 15px; font-weight: 600;">FOR</label>
+                            <label class="ml-1 mb-3" style="font-size: 20px; font-weight: 700;">$</label>
+                            <label style="font-size: 40px; font-weight: 700;">
+                                {{ deal.deal_amount }}
+                            </label>
+                        </div>
+                    </ng-container>
+
+                    <!-- Offer -->
+                    <ng-container *ngSwitchCase="'offer'">
+                        <div class="col-8 flex flex-column justify-content-center align-items-center h-5rem">
+                            <div class="flex flex-row align-items-center">
+                                <label style="font-size: 20px; font-weight: 700;">
+                                    {{ deal.deal_offer }}
+                                </label>
+                                <label class="ml-2" style="font-size: 20px; font-weight: 600;">
+                                    FOR
+                                </label>
+                            </div>
+                            <label style="font-size: 12px; font-weight: 600;">
+                                {{ deal.deal_title }}
+                            </label>
+                        </div>
+
+                        <div class="col-4 flex flex-row justify-content-center h-5rem">
+                            <label style="font-size: 20px; font-weight: 700;">$</label>
+                            <label style="font-size: 40px; font-weight: 700;">
+                                {{ deal.deal_amount }}
+                            </label>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngSwitchDefault="">
+                        <div class="col-6 flex flex-row justify-content-center align-items-center h-5rem">
+                            <label style="font-size: 55px; font-weight: 700;">{{ deal.deal_amount || 20 }}
+                            </label>
+                            <div class="flex flex-column justify-content-center" style="margin-top: -20px;">
+                                <label class="mt-3" style="font-size: 30px; font-weight: 700;">%</label>
+                                <label style="font-size: 15px; font-weight: 700; margin-top: -10px;">OFF</label>
+                            </div>
+                        </div>
+
+                        <div class="col-6 flex flex-column justify-content-center align-items-center h-5rem">
+                            <label style="font-size: 17px; font-weight: 600;">  {{ deal.deal_title || 'Title Deal'}}</label>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

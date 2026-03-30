@@ -1,0 +1,68 @@
+<p-toolbar class="ml-4 mr-4">
+    <div class="p-toolbar-group-left">
+        <label style="font-size:18px; font-weight: 500;">Dispensary Stores</label>
+    </div>
+    <div class="p-toolbar-group-right">
+        <p-button *authorized="'add'" label="New" icon="pi pi-plus" class="mr-2" [routerLink]="['/dispensary/stores/add']"
+            [style]="{'background': '#E19A3D', 'color': '#F8FAFC', 'border-color': '#E19A3D'}">
+        </p-button>
+    </div>
+</p-toolbar>
+<div class="grid">
+    <p-card class="col-12">
+        <p-scrollPanel [style]="{width: '100%', height: '55vh'}">
+            <div class="grid">
+                <div pRipple class="col-12 yBorderGroup green mb-4" *ngFor="let store of stores">
+                    <div class="grid">
+
+                        <!-- Image -->
+                        <div class="col-3 flex justify-content-end align-items-center">
+                                <p-image *ngIf="!(store.store_photos.length > 0)" src="/assets/deal-default.png" alt="Image" width="250"
+                                [imageStyle]="{'border-radius':'25px'}"></p-image>
+
+                            <p-image *ngIf="(store.store_photos.length > 0)" [src]="store.store_photos[0].photo_url"
+                                alt="Image" width="250" [imageStyle]="{'border-radius':'25px'}"></p-image>
+                        </div>
+
+                        <div class="col-9 flex flex-column">
+                            <div class="col-12 flex flex-row">
+                                <!-- Store Name -->
+                                <div class="col-6 flex flex-column">
+                                    <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Store Name</label>
+                                    <label class="yLabel" style="padding: 0.75rem;"> {{store.store_name}} </label>
+                                </div>
+                                <!-- Address Line 1 -->
+                                <div class="col-6 flex flex-column">
+                                    <label class="text-800 w-6 md:w-6 ml-2" style="font-size:13px;">Address Line
+                                        1</label>
+                                    <label class="yLabel" style="padding: 0.75rem;"> {{store.store_addressLine1}}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-12 flex flex-row">
+                                <!-- City -->
+                                <div class="col-5 flex flex-column">
+                                    <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">City</label>
+                                    <label class="yLabel" style="padding: 0.75rem;"> {{store.store_city}} </label>
+                                </div>
+                                <!-- State -->
+                                <div class="col-5 flex flex-column">
+                                    <label class="text-800 w-6 md:w-2 ml-2" style="font-size:13px;">State</label>
+                                    <label class="yLabel" style="padding: 0.75rem;"> {{store.store_state}} </label>
+                                </div>
+                                <!-- Button View Store -->
+                                <div class="col-2 flex flex-column">
+                                    <p-button *authorized="'details'" label="Details" class="view-store-detail" icon="pi pi-eye"
+                                        [routerLink]="['/dispensary/stores/'+ store.store_id]">
+                                    </p-button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </p-scrollPanel>
+    </p-card>
+</div>
