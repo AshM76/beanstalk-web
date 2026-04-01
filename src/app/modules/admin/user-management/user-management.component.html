@@ -1,0 +1,221 @@
+<div class="user-management">
+  <div class="page-header">
+    <h2>User Verification & Management</h2>
+    <p class="subtitle">Review and verify user accounts, age verification status, and parental consent</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <input
+        type="text"
+        placeholder="Search by email or name..."
+        [(ngModel)]="filterText"
+        (input)="applyFilters()"
+        class="filter-input"
+      />
+    </div>
+
+    <div class="filter-group">
+      <select [(ngModel)]="filterStatus" (change)="applyFilters()" class="filter-select">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="pending_verification">Pending Verification</option>
+        <option value="suspended">Suspended</option>
+        <option value="banned">Banned</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <select [(ngModel)]="filterAgeGroup" (change)="applyFilters()" class="filter-select">
+        <option value="">All Age Groups</option>
+        <option value="middle_school">Middle School (13-14)</option>
+        <option value="high_school">High School (15-18)</option>
+        <option value="college">College (19-25)</option>
+        <option value="adults">Adults (26+)</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <select [(ngModel)]="filterVerified" (change)="applyFilters()" class="filter-select">
+        <option value="">All Verification</option>
+        <option value="verified">Age Verified</option>
+        <option value="unverified">Not Verified</option>
+        <option value="parental">Needs Parental Consent</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    <p>Loading users...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-message">
+    <i class="material-icons">error</i>
+    <p>{{ error }}</p>
+    <button (click)="loadUsers()" class="retry-btn">Retry</button>
+  </div>
+
+  <!-- Users Table -->
+  <div *ngIf="!loading && !error" class="users-table-container">
+    <div class="table-info">
+      <p>Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, filteredUsers.length) }} of {{ filteredUsers.length }} users</p>
+    </div>
+
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Age Group</th>
+          <th>Status</th>
+          <th>Age Verified</th>
+          <th>Parental Consent</th>
+          <th>Joined</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of getPaginatedUsers()" class="user-row">
+          <td class="user-info">
+            <div class="user-avatar">{{ user.user_firstName.charAt(0) }}</div>
+            <div class="user-details">
+              <div class="user-name">{{ user.user_firstName }} {{ user.user_lastName }}</div>
+              <div class="user-email">{{ user.user_email }}</div>
+            </div>
+          </td>
+          <td>
+            <span class="badge" [style.backgroundColor]="getAgeGroupColor(user.user_age_group)">
+              {{ user.user_age_group }}
+            </span>
+          </td>
+          <td>
+            <span class="badge" [style.backgroundColor]="getStatusColor(user.user_account_status)">
+              {{ user.user_account_status }}
+            </span>
+          </td>
+          <td>
+            <span *ngIf="user.user_age_verified" class="status-icon verified">
+              <i class="material-icons">check_circle</i>
+            </span>
+            <span *ngIf="!user.user_age_verified" class="status-icon pending">
+              <i class="material-icons">pending</i>
+            </span>
+          </td>
+          <td>
+            <span *ngIf="user.user_age_group === 'middle_school' || user.user_age_group === 'high_school'">
+              <span *ngIf="user.user_parent_consent" class="status-icon verified">
+                <i class="material-icons">check_circle</i>
+              </span>
+              <span *ngIf="!user.user_parent_consent" class="status-icon pending">
+                <i class="material-icons">pending</i>
+              </span>
+            </span>
+            <span *ngIf="user.user_age_group !== 'middle_school' && user.user_age_group !== 'high_school'" class="text-muted">
+              N/A
+            </span>
+          </td>
+          <td class="date">{{ user.user_account_created_at | date: 'short' }}</td>
+          <td class="actions">
+            <button
+              *ngIf="!user.user_age_verified"
+              (click)="openAction(user, 'verify')"
+              class="action-btn verify"
+              title="Verify age"
+            >
+              <i class="material-icons">verified_user</i>
+            </button>
+            <button
+              *ngIf="(user.user_age_group === 'middle_school' || user.user_age_group === 'high_school') && !user.user_parent_email_verified"
+              (click)="openAction(user, 'consent')"
+              class="action-btn consent"
+              title="Approve parental consent"
+            >
+              <i class="material-icons">person_add</i>
+            </button>
+            <button
+              *ngIf="user.user_account_status !== 'suspended'"
+              (click)="openAction(user, 'suspend')"
+              class="action-btn suspend"
+              title="Suspend account"
+            >
+              <i class="material-icons">block</i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1" class="pagination-btn">
+        <i class="material-icons">chevron_left</i>
+      </button>
+      <span class="page-info">Page {{ currentPage }} of {{ getTotalPages() }}</span>
+      <button [disabled]="currentPage === getTotalPages()" (click)="currentPage = currentPage + 1" class="pagination-btn">
+        <i class="material-icons">chevron_right</i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Action Modal -->
+  <div *ngIf="showActionModal" class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <span *ngIf="actionType === 'verify'">Verify Age</span>
+          <span *ngIf="actionType === 'consent'">Approve Parental Consent</span>
+          <span *ngIf="actionType === 'suspend'">Suspend Account</span>
+        </h3>
+        <button (click)="closeModal()" class="close-btn">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p *ngIf="selectedUser">
+          <strong>User:</strong> {{ selectedUser.user_firstName }} {{ selectedUser.user_lastName }}
+          ({{ selectedUser.user_email }})
+        </p>
+
+        <p *ngIf="actionType === 'verify'" class="action-description">
+          This will mark the user's age as verified in the system.
+        </p>
+        <p *ngIf="actionType === 'consent'" class="action-description">
+          This will approve the parental consent for this minor user.
+        </p>
+        <p *ngIf="actionType === 'suspend'" class="action-description warning">
+          This will suspend the user's account. They will not be able to access the platform.
+        </p>
+
+        <p *ngIf="actionMessage" class="error-text">{{ actionMessage }}</p>
+      </div>
+
+      <div class="modal-footer">
+        <button (click)="closeModal()" class="btn-cancel">Cancel</button>
+        <button
+          *ngIf="actionType === 'verify'"
+          (click)="verifyAge()"
+          class="btn-action confirm"
+        >
+          Verify Age
+        </button>
+        <button
+          *ngIf="actionType === 'consent'"
+          (click)="approveParentalConsent()"
+          class="btn-action confirm"
+        >
+          Approve Consent
+        </button>
+        <button
+          *ngIf="actionType === 'suspend'"
+          (click)="suspendAccount()"
+          class="btn-action danger"
+        >
+          Suspend Account
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

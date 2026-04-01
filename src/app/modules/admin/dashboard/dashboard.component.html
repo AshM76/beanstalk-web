@@ -1,0 +1,114 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <h2>Dashboard Overview</h2>
+    <p class="subtitle">Real-time platform metrics and statistics</p>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <p>Loading metrics...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <i class="material-icons">error</i>
+    <p>{{ error }}</p>
+    <button (click)="loadMetrics()" class="retry-btn">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error" class="metrics-grid">
+    <!-- Total Users -->
+    <div class="metric-card">
+      <div class="metric-icon users">
+        <i class="material-icons">people</i>
+      </div>
+      <div class="metric-content">
+        <div class="metric-label">Total Users</div>
+        <div class="metric-value">{{ metrics.total_users | number }}</div>
+        <div class="metric-subtitle">Active accounts</div>
+      </div>
+    </div>
+
+    <!-- Verified Users -->
+    <div class="metric-card">
+      <div class="metric-icon verified">
+        <i class="material-icons">verified_user</i>
+      </div>
+      <div class="metric-content">
+        <div class="metric-label">Age Verified</div>
+        <div class="metric-value">{{ metrics.verified_users | number }}</div>
+        <div class="metric-subtitle">{{ ((metrics.verified_users / metrics.total_users) * 100 | number: '1.0-0') }}% of users</div>
+      </div>
+    </div>
+
+    <!-- Pending Verification -->
+    <div class="metric-card">
+      <div class="metric-icon warning">
+        <i class="material-icons">pending_actions</i>
+      </div>
+      <div class="metric-content">
+        <div class="metric-label">Pending Verification</div>
+        <div class="metric-value">{{ metrics.pending_verification | number }}</div>
+        <div class="metric-subtitle">Awaiting action</div>
+      </div>
+    </div>
+
+    <!-- Active Contests -->
+    <div class="metric-card">
+      <div class="metric-icon contests">
+        <i class="material-icons">event</i>
+      </div>
+      <div class="metric-content">
+        <div class="metric-label">Active Contests</div>
+        <div class="metric-value">{{ metrics.active_contests | number }}</div>
+        <div class="metric-subtitle">Running now</div>
+      </div>
+    </div>
+
+    <!-- Total Participants -->
+    <div class="metric-card">
+      <div class="metric-icon participants">
+        <i class="material-icons">person_add</i>
+      </div>
+      <div class="metric-content">
+        <div class="metric-label">Contest Participants</div>
+        <div class="metric-value">{{ metrics.total_participants | number }}</div>
+        <div class="metric-subtitle">Across all contests</div>
+      </div>
+    </div>
+
+    <!-- Total Portfolio Value -->
+    <div class="metric-card">
+      <div class="metric-icon portfolio">
+        <i class="material-icons">trending_up</i>
+      </div>
+      <div class="metric-content">
+        <div class="metric-label">Total Portfolio Value</div>
+        <div class="metric-value">${{ (metrics.total_portfolio_value / 1000000) | number: '1.1-1' }}M</div>
+        <div class="metric-subtitle">Virtual trading volume</div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error" class="dashboard-footer">
+    <div class="quick-links">
+      <h3>Quick Actions</h3>
+      <div class="links-list">
+        <a routerLink="/admin/users" class="quick-link">
+          <i class="material-icons">people</i>
+          <span>Verify Users</span>
+        </a>
+        <a routerLink="/admin/contests" class="quick-link">
+          <i class="material-icons">event</i>
+          <span>Manage Contests</span>
+        </a>
+        <a routerLink="/admin/compliance" class="quick-link">
+          <i class="material-icons">description</i>
+          <span>Manage EULAs</span>
+        </a>
+        <a routerLink="/admin/analytics" class="quick-link">
+          <i class="material-icons">analytics</i>
+          <span>View Analytics</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<div class="analytics">
+  <div class="page-header">
+    <h2>Analytics & Reporting</h2>
+    <p class="subtitle">Platform metrics, user insights, and contest performance data</p>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading analytics...</div>
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="!loading && !error" class="analytics-grid">
+    <div class="analytics-card">
+      <h3>Users by Age Group</h3>
+      <div class="stat-list">
+        <div *ngFor="let [group, count] of (analytics.users_by_age_group | keyvalue)" class="stat-item">
+          <span class="stat-label">{{ group }}</span>
+          <span class="stat-value">{{ count }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="analytics-card">
+      <h3>Contest Performance</h3>
+      <div *ngFor="let [metric, value] of (analytics.contest_metrics | keyvalue)" class="stat-item">
+        <span class="stat-label">{{ metric }}</span>
+        <span class="stat-value">{{ value }}</span>
+      </div>
+    </div>
+
+    <div class="analytics-card">
+      <h3>Portfolio Metrics</h3>
+      <div *ngFor="let [metric, value] of (analytics.portfolio_metrics | keyvalue)" class="stat-item">
+        <span class="stat-label">{{ metric }}</span>
+        <span class="stat-value">{{ value }}</span>
+      </div>
+    </div>
+  </div>
+</div>

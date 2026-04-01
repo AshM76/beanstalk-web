@@ -1,0 +1,47 @@
+<div class="contest-manager">
+  <div class="page-header">
+    <h2>Contest Manager</h2>
+    <p class="subtitle">Create and manage investment contests for age-matched cohorts</p>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading contests...</div>
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="!loading && !error" class="contests-section">
+    <div class="contests-list">
+      <div *ngFor="let contest of getFilteredContests()" class="contest-card">
+        <div class="contest-status" [style.backgroundColor]="getStatusColor(contest.status)">
+          {{ contest.status }}
+        </div>
+        <h3>{{ contest.name }}</h3>
+        <p class="description">{{ contest.description }}</p>
+        <div class="contest-details">
+          <div class="detail-group">
+            <span class="label">Age Groups:</span>
+            <div class="badges">
+              <span *ngFor="let group of contest.age_groups" class="badge">{{ group }}</span>
+            </div>
+          </div>
+          <div class="detail-group">
+            <span class="label">Duration:</span>
+            <p>{{ contest.start_date | date: 'short' }} - {{ contest.end_date | date: 'short' }}</p>
+          </div>
+          <div class="detail-group">
+            <span class="label">Participants:</span>
+            <p>
+              {{ contest.current_participants }}
+              <span *ngIf="contest.max_participants"> / {{ contest.max_participants }}</span>
+            </p>
+            <div class="progress-bar" *ngIf="contest.max_participants">
+              <div class="progress-fill" [style.width.%]="getParticipationPercent(contest)"></div>
+            </div>
+          </div>
+        </div>
+        <div class="contest-actions">
+          <button class="btn-secondary">View Details</button>
+          <button class="btn-primary">Manage Contest</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

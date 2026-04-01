@@ -1,0 +1,46 @@
+<div class="compliance">
+  <div class="page-header">
+    <h2>Compliance & EULA Management</h2>
+    <p class="subtitle">Manage terms of service, privacy policy, and contest rules</p>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading documents...</div>
+  <div  *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="!loading && !error" class="documents-section">
+    <div class="type-filter">
+      <button
+        *ngFor="let type of ['all', 'terms_of_service', 'privacy_policy', 'contest_rules']"
+        (click)="selectedType = type"
+        [class.active]="selectedType === type"
+        class="filter-btn"
+      >
+        {{ type === 'all' ? 'All Documents' : type.replace('_', ' ') }}
+      </button>
+    </div>
+
+    <div class="documents-list">
+      <div *ngFor="let doc of getFilteredDocuments()" class="document-card">
+        <div class="doc-header">
+          <div class="doc-icon">
+            <i class="material-icons">{{ getDocumentIcon(doc.eula_type) }}</i>
+          </div>
+          <div class="doc-title">
+            <h3>{{ doc.eula_type }}</h3>
+            <p class="doc-version">Version {{ doc.version }}</p>
+          </div>
+          <div *ngIf="doc.is_current_version" class="current-badge">Current</div>
+        </div>
+        <div class="doc-info">
+          <p><strong>Effective:</strong> {{ doc.effective_date | date }}</p>
+          <p><strong>Created:</strong> {{ doc.created_at | date: 'short' }}</p>
+          <p><strong>Changes:</strong> {{ doc.change_summary }}</p>
+        </div>
+        <div class="doc-actions">
+          <button class="action-btn">View Full Text</button>
+          <button class="action-btn" *ngIf="!doc.is_current_version">Activate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

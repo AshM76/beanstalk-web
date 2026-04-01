@@ -1,0 +1,53 @@
+<div class="admin-container">
+  <!-- Sidebar Navigation -->
+  <div class="admin-sidebar" [class.collapsed]="!showSidebar">
+    <div class="sidebar-header">
+      <h2>Beanstalk Admin</h2>
+      <button (click)="toggleSidebar()" class="toggle-btn">
+        <i class="material-icons">{{ showSidebar ? 'expand_less' : 'expand_more' }}</i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="section-label" *ngIf="showSidebar">Navigation</div>
+        <a
+          *ngFor="let item of sidebarItems"
+          [routerLink]="item.path"
+          routerLinkActive="active"
+          class="nav-item"
+          [title]="item.label"
+          *ngIf="isItemVisible(item.permission)"
+        >
+          <i class="material-icons">{{ item.icon }}</i>
+          <span *ngIf="showSidebar">{{ item.label }}</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info" *ngIf="adminUser && showSidebar">
+        <div class="user-avatar">{{ adminUser.admin_fullname.charAt(0) }}</div>
+        <div class="user-details">
+          <div class="user-name">{{ adminUser.admin_fullname }}</div>
+          <div class="user-role">{{ getRoleName() }}</div>
+        </div>
+      </div>
+      <button (click)="logout()" class="logout-btn" [title]="'Logout'">
+        <i class="material-icons">logout</i>
+        <span *ngIf="showSidebar">Logout</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="admin-content">
+    <div class="content-header">
+      <h1>Admin Dashboard</h1>
+    </div>
+
+    <div class="content-body">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
