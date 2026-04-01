@@ -1,7 +1,55 @@
 <div class="contest-manager">
   <div class="page-header">
     <h2>Contest Manager</h2>
-    <p class="subtitle">Create and manage investment contests for age-matched cohorts</p>
+    <p class="subtitle">Create and manage investment contests with real prizes and notifications</p>
+    <button class="btn-primary" (click)="showCreateForm = !showCreateForm">
+      {{ showCreateForm ? 'Cancel' : 'Create New Contest' }}
+    </button>
+  </div>
+
+  <!-- Create Contest Form -->
+  <div *ngIf="showCreateForm" class="create-form">
+    <h3>Create New Contest</h3>
+    <form (ngSubmit)="createContest()" #contestForm="ngForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Name:</label>
+          <input type="text" [(ngModel)]="newContest.name" name="name" required>
+        </div>
+        <div class="form-group">
+          <label>Starting Balance ($):</label>
+          <input type="number" [(ngModel)]="newContest.starting_balance" name="starting_balance" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description:</label>
+        <textarea [(ngModel)]="newContest.description" name="description" rows="3"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Start Date:</label>
+          <input type="datetime-local" [(ngModel)]="newContest.start_date" name="start_date" required>
+        </div>
+        <div class="form-group">
+          <label>End Date:</label>
+          <input type="datetime-local" [(ngModel)]="newContest.end_date" name="end_date" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Age Groups:</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" [(ngModel)]="newContest.age_groups" value="middle_school"> Middle School</label>
+          <label><input type="checkbox" [(ngModel)]="newContest.age_groups" value="high_school"> High School</label>
+          <label><input type="checkbox" [(ngModel)]="newContest.age_groups" value="college"> College</label>
+          <label><input type="checkbox" [(ngModel)]="newContest.age_groups" value="adults"> Adults</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Max Participants:</label>
+        <input type="number" [(ngModel)]="newContest.max_participants" name="max_participants">
+      </div>
+      <button type="submit" class="btn-primary" [disabled]="!contestForm.valid">Create Contest</button>
+    </form>
   </div>
 
   <div *ngIf="loading" class="loading">Loading contests...</div>
@@ -9,7 +57,7 @@
 
   <div *ngIf="!loading && !error" class="contests-section">
     <div class="contests-list">
-      <div *ngFor="let contest of getFilteredContests()" class="contest-card">
+      <div *ngFor="let contest of contests" class="contest-card" [class.selected]="selectedContest?.contest_id === contest.contest_id" (click)="selectContest(contest)">
         <div class="contest-status" [style.backgroundColor]="getStatusColor(contest.status)">
           {{ contest.status }}
         </div>
@@ -28,19 +76,75 @@
           </div>
           <div class="detail-group">
             <span class="label">Participants:</span>
-            <p>
-              {{ contest.current_participants }}
-              <span *ngIf="contest.max_participants"> / {{ contest.max_participants }}</span>
-            </p>
-            <div class="progress-bar" *ngIf="contest.max_participants">
-              <div class="progress-fill" [style.width.%]="getParticipationPercent(contest)"></div>
-            </div>
+            <p>{{ participants.length }}</p>
           </div>
         </div>
-        <div class="contest-actions">
-          <button class="btn-secondary">View Details</button>
-          <button class="btn-primary">Manage Contest</button>
+      </div>
+    </div>
+
+    <!-- Contest Details Panel -->
+    <div *ngIf="selectedContest" class="contest-details-panel">
+      <h3>{{ selectedContest.name }} - Management</h3>
+
+      <!-- Participants Table -->
+      <div class="participants-section">
+        <h4>Participants ({{ participants.length }})</h4>
+        <table class="participants-table">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Age Group</th>
+              <th>Portfolio Value</th>
+              <th>Return %</th>
+              <th>Positions</th>
+              <th>Entry Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let participant of participants">
+              <td>{{ participant.user_id }}</td>
+              <td>{{ participant.age_group }}</td>
+              <td>\${{ participant.portfolio.current_value | number:'1.2-2' }}</td>
+              <td>{{ participant.portfolio.total_return_percent | number:'1.2-2' }}%</td>
+              <td>{{ participant.portfolio.position_count }}</td>
+              <td>{{ participant.entry_date | date:'short' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Notification Panel -->
+      <div class="notification-section">
+        <h4>Send Notifications</h4>
+        <button class="btn-secondary" (click)="showNotificationForm = !showNotificationForm">
+          {{ showNotificationForm ? 'Cancel' : 'Send Notification' }}
+        </button>
+
+        <div *ngIf="showNotificationForm" class="notification-form">
+          <div class="form-group">
+            <label>Notification Type:</label>
+            <select [(ngModel)]="notification.type">
+              <option value="invite">Contest Invite</option>
+              <option value="leaderboard">Leaderboard Update</option>
+              <option value="winner">Contest Winner</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message:</label>
+            <textarea [(ngModel)]="notification.message" placeholder="Enter notification message..." rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Target Users (comma-separated tokens):</label>
+            <textarea [(ngModel)]="notification.userTokens" placeholder="user_token_1,user_token_2,..." rows="2"></textarea>
+          </div>
+          <button class="btn-primary" (click)="sendNotification()">Send Notification</button>
         </div>
+      </div>
+
+      <!-- Payout Management (Future) -->
+      <div class="payout-section">
+        <h4>Prize Management</h4>
+        <p>Coming soon: Manage prize payouts for contest winners</p>
       </div>
     </div>
   </div>

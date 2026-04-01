@@ -12,6 +12,23 @@ interface Contest {
   end_date: Date;
   current_participants: number;
   max_participants: number;
+  prizes?: any[];
+  starting_balance?: number;
+}
+
+interface Participant {
+  participation_id: string;
+  user_id: string;
+  age_group: string;
+  entry_date: Date;
+  status: string;
+  portfolio: {
+    portfolio_id: string;
+    current_value: number;
+    total_return_percent: number;
+    position_count: number;
+  };
+  metrics: any;
 }
 
 @Component({
@@ -21,9 +38,33 @@ interface Contest {
 })
 export class ContestManagerComponent implements OnInit {
   contests: Contest[] = [];
+  selectedContest: Contest | null = null;
+  participants: Participant[] = [];
   loading = true;
   error: string | null = null;
   statusFilter = '';
+
+  // Create contest form
+  showCreateForm = false;
+  newContest = {
+    name: '',
+    description: '',
+    age_groups: ['high_school', 'college', 'adults'],
+    start_date: '',
+    end_date: '',
+    starting_balance: 10000,
+    prizes: [] as any[],
+    max_participants: 100,
+    visibility: 'public'
+  };
+
+  // Notification form
+  showNotificationForm = false;
+  notification = {
+    type: 'invite',
+    message: '',
+    userTokens: [] as string[]
+  };
 
   constructor(private http: HttpClient) {}
 
@@ -37,7 +78,7 @@ export class ContestManagerComponent implements OnInit {
 
     this.http.get<any>(`${environment.baseUrl}/api/contests`).subscribe({
       next: (response) => {
-        this.contests = response.data.contests || [];
+        this.contests = response.contests || [];
         this.loading = false;
       },
       error: (err) => {
@@ -46,6 +87,104 @@ export class ContestManagerComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  selectContest(contest: Contest): void {
+    this.selectedContest = contest;
+    this.loadParticipants(contest.contest_id);
+  }
+
+  loadParticipants(contestId: string): void {
+    this.http.get<any>(`${environment.baseUrl}/api/contests/${contestId}/participants`).subscribe({
+      next: (response) => {
+        this.participants = response.participants || [];
+      },
+      error: (err) => {
+        console.error('Failed to load participants:', err);
+        this.participants = [];
+      },
+    });
+  }
+
+  createContest(): void {
+    this.http.post<any>(`${environment.baseUrl}/api/contests`, this.newContest).subscribe({
+      next: (response) => {
+        this.contests.unshift(response);
+        this.showCreateForm = false;
+        this.resetNewContest();
+      },
+      error: (err) => {
+        console.error('Failed to create contest:', err);
+        this.error = 'Failed to create contest';
+      },
+    });
+  }
+
+  sendNotification(): void {
+    if (!this.selectedContest) return;
+
+    const endpoint = this.notification.type === 'invite' ? 'contest-invite' :
+                    this.notification.type === 'leaderboard' ? 'leaderboard-update' : 'contest-winner';
+
+    const payload = {
+      userTokens: this.notification.userTokens,
+      contestId: this.selectedContest.contest_id,
+      contestName: this.selectedContest.name,
+      message: this.notification.message
+    };
+
+    this.http.post<any>(`${environment.baseUrl}/api/notifications/${endpoint}`, payload).subscribe({
+      next: (response) => {
+        alert(`Notification sent to ${this.notification.userTokens.length} users`);
+        this.showNotificationForm = false;
+        this.resetNotification();
+      },
+      error: (err) => {
+        console.error('Failed to send notification:', err);
+        this.error = 'Failed to send notification';
+      },
+    });
+  }
+
+  private resetNewContest(): void {
+    this.newContest = {
+      name: '',
+      description: '',
+      age_groups: ['high_school', 'college', 'adults'],
+      start_date: '',
+      end_date: '',
+      starting_balance: 10000,
+      prizes: [],
+      max_participants: 100,
+      visibility: 'public'
+    };
+  }
+
+  private resetNotification(): void {
+    this.notification = {
+      type: 'invite',
+      message: '',
+      userTokens: []
+    };
+  }
+
+  getFilteredContests(): Contest[] {
+    if (!this.statusFilter) return this.contests;
+    return this.contests.filter(c => c.status === this.statusFilter);
+  }
+
+  getStatusColor(status: string): string {
+    switch (status) {
+      case 'active': return '#28a745';
+      case 'draft': return '#ffc107';
+      case 'concluded': return '#6c757d';
+      default: return '#007bff';
+    }
+  }
+
+  getParticipationPercent(contest: Contest): number {
+    if (!contest.max_participants) return 0;
+    return (contest.current_participants / contest.max_participants) * 100;
   }
 
   getFilteredContests(): Contest[] {
