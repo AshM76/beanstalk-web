@@ -11,5 +11,10 @@
   ],
   "include": [
     "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "src/app/modules/admin/user-management/**",
+    "src/app/modules/admin/compliance/**",
+    "src/app/modules/admin/analytics/**"
   ]
 }

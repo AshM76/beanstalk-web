@@ -10,6 +10,7 @@ import { Observable } from 'rxjs'
 import { AccountService } from '../account/account.service'
 import { PermissionService } from './permission.service'
 import { AdminUserType } from '../account/account.types'
+import { environment } from 'src/environments/environment'
 
 /**
  * Admin Guard
@@ -29,6 +30,9 @@ export class AdminGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    // Dev bypass: admin routes open without login.
+    if (environment.devBypassAuth) return true
+
     // Check if user is logged in and is an admin
     const adminUser = this.accountService.getAdminUser()
 
@@ -38,7 +42,7 @@ export class AdminGuard implements CanActivate {
     }
 
     // Check if route requires specific permission
-    const requiredPermission = route.data['permission'] as keyof any
+    const requiredPermission = route.data['permission'] as keyof import('../account/account.types').AdminPermissions
 
     if (requiredPermission) {
       if (!this.permissionService.hasPermission(adminUser.admin_role, requiredPermission)) {
@@ -68,6 +72,9 @@ export class RoleGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    // Dev bypass: admin routes open without login.
+    if (environment.devBypassAuth) return true
+
     const adminUser = this.accountService.getAdminUser()
 
     if (!adminUser) {

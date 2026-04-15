@@ -5,7 +5,7 @@ import { catchError, map, Observable, of, switchMap, BehaviorSubject } from 'rxj
 import { ApiResponse } from '../types/api-response.type';
 
 import { DispensaryService } from '../dispensary/dispensary.service';
-import { DispensaryAccount, AdminAccount } from './account.types';
+import { DispensaryAccount, AdminAccount, AdminUserType } from './account.types';
 
 import { environment } from 'src/environments/environment';
 
@@ -68,9 +68,30 @@ export class AccountService {
 
     /**
      * Get admin user from stored session
+     *
+     * In dev bypass mode (environment.devBypassAuth), synthesize a super-admin
+     * so the console opens without a real login. The AdminGuard/RoleGuard also
+     * short-circuit in this mode, so permission checks here are just belt-and-
+     * suspenders for components that read adminUser directly.
      */
     getAdminUser(): AdminAccount | null {
-        return this.adminAccount;
+        if (this.adminAccount) return this.adminAccount;
+        if (environment.devBypassAuth) {
+            const fake: AdminAccount = {
+                admin_id: 'dev-admin',
+                admin_email: 'admin@beanstalk.app',
+                admin_fullname: 'Dev Admin',
+                admin_role: AdminUserType.ADMIN_SUPER,
+                admin_permissions: [],
+                admin_created_at: new Date(),
+                admin_active: true,
+            };
+            // Populate so subscribers of adminAccount$ also see the dev user.
+            this.adminAccount = fake;
+            this.adminAccount$.next(fake);
+            return fake;
+        }
+        return null;
     }
 
     /**

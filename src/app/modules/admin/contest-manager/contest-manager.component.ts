@@ -170,27 +170,6 @@ export class ContestManagerComponent implements OnInit {
 
   getFilteredContests(): Contest[] {
     if (!this.statusFilter) return this.contests;
-    return this.contests.filter(c => c.status === this.statusFilter);
-  }
-
-  getStatusColor(status: string): string {
-    switch (status) {
-      case 'active': return '#28a745';
-      case 'draft': return '#ffc107';
-      case 'concluded': return '#6c757d';
-      default: return '#007bff';
-    }
-  }
-
-  getParticipationPercent(contest: Contest): number {
-    if (!contest.max_participants) return 0;
-    return (contest.current_participants / contest.max_participants) * 100;
-  }
-
-  getFilteredContests(): Contest[] {
-    if (!this.statusFilter) {
-      return this.contests;
-    }
     return this.contests.filter((c) => c.status === this.statusFilter);
   }
 

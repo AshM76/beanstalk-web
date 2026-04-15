@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { AccountService } from '../../core/account/account.service'
 import { PermissionService } from '../../core/auth/permission.service'
-import { AdminAccount, AdminUserType } from '../../core/account/account.types'
+import { AdminAccount, AdminUserType, AdminPermissions } from '../../core/account/account.types'
 
 @Component({
   selector: 'app-admin',
@@ -67,7 +67,7 @@ export class AdminComponent implements OnInit {
     }
     return this.permissionService.hasPermission(
       this.adminUser.admin_role,
-      permission as keyof any
+      permission as keyof AdminPermissions
     );
   }
 

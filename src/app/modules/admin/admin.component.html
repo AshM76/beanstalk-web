@@ -11,17 +11,18 @@
     <nav class="sidebar-nav">
       <div class="sidebar-section">
         <div class="section-label" *ngIf="showSidebar">Navigation</div>
-        <a
-          *ngFor="let item of sidebarItems"
-          [routerLink]="item.path"
-          routerLinkActive="active"
-          class="nav-item"
-          [title]="item.label"
-          *ngIf="isItemVisible(item.permission)"
-        >
-          <i class="material-icons">{{ item.icon }}</i>
-          <span *ngIf="showSidebar">{{ item.label }}</span>
-        </a>
+        <ng-container *ngFor="let item of sidebarItems">
+          <a
+            *ngIf="isItemVisible(item.permission)"
+            [routerLink]="item.path"
+            routerLinkActive="active"
+            class="nav-item"
+            [title]="item.label"
+          >
+            <i class="material-icons">{{ item.icon }}</i>
+            <span *ngIf="showSidebar">{{ item.label }}</span>
+          </a>
+        </ng-container>
       </div>
     </nav>
 

@@ -9,6 +9,14 @@ import { AuthGuard } from "./core/auth/guards/auth.guard";
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
 
+  // Admin console — standalone (not wrapped in LayoutComponent so the admin
+  // module owns its own shell). Access is gated by AdminGuard inside the
+  // module; in dev bypass mode (environment.devBypassAuth) it opens freely.
+  {
+    path: 'admin',
+    loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule)
+  },
+
   // Auth routes for guests
   {
     path: '',

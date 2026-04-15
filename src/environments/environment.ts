@@ -4,13 +4,18 @@
 
 export const environment = {
   production: false,
-  //API URL
-  baseUrl: 'https://beanstalk.app/api',
-  // baseUrl: 'http://localhost:8080/api',
+  //API URL — points at the local beanstalk-api dev server. App code appends
+  //the '/api/...' path segment, so baseUrl here is the origin only.
+  baseUrl: 'http://localhost:8080',
   //IMAGES RESOURCES
   resourcesUrl: 'https://storage.googleapis.com/',
   //VERSION WEBAPP
-  version: 'v.0.10'
+  version: 'v.0.10',
+  // Dev bypass: when true, AuthGuard/AdminGuard/RoleGuard all pass and
+  // AccountService.getAdminUser() synthesizes a super-admin, so the admin
+  // console opens without a real login (no BigQuery-backed admin auth
+  // needed). Must stay false in environment.prod.ts.
+  devBypassAuth: true
 };
 
 /*
