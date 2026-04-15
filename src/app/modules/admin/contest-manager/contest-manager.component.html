@@ -1,151 +1,252 @@
-<div class="contest-manager">
-  <div class="page-header">
-    <h2>Contest Manager</h2>
-    <p class="subtitle">Create and manage investment contests with real prizes and notifications</p>
-    <button class="btn-primary" (click)="showCreateForm = !showCreateForm">
-      {{ showCreateForm ? 'Cancel' : 'Create New Contest' }}
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Contest Management – Beanstalk Admin Console
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<div class="cm">
+  <!-- ── Page header ─────────────────────────────────────────────────── -->
+  <header class="cm-header">
+    <div>
+      <h1>Contest Management</h1>
+      <p class="subtitle">Create and manage investment contests</p>
+    </div>
+    <button class="btn btn-green" (click)="showCreateForm = true">
+      <span class="btn-icon">+</span> Create Contest
+    </button>
+  </header>
+
+  <!-- ── Status filter chips ─────────────────────────────────────────── -->
+  <div class="cm-filters">
+    <button class="chip" [class.active]="!statusFilter" (click)="statusFilter = ''">All</button>
+    <button class="chip" [class.active]="statusFilter === 'active'" (click)="statusFilter = 'active'">
+      <span class="dot dot-active"></span> Active
+    </button>
+    <button class="chip" [class.active]="statusFilter === 'draft'" (click)="statusFilter = 'draft'">
+      <span class="dot dot-draft"></span> Draft
+    </button>
+    <button class="chip" [class.active]="statusFilter === 'concluded'" (click)="statusFilter = 'concluded'">
+      <span class="dot dot-ended"></span> Concluded
     </button>
   </div>
 
-  <!-- Create Contest Form -->
-  <div *ngIf="showCreateForm" class="create-form">
-    <h3>Create New Contest</h3>
-    <form (ngSubmit)="createContest()" #contestForm="ngForm">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Name:</label>
-          <input type="text" [(ngModel)]="newContest.name" name="name" required>
-        </div>
-        <div class="form-group">
-          <label>Starting Balance ($):</label>
-          <input type="number" [(ngModel)]="newContest.starting_balance" name="starting_balance" required>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Description:</label>
-        <textarea [(ngModel)]="newContest.description" name="description" rows="3"></textarea>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Start Date:</label>
-          <input type="datetime-local" [(ngModel)]="newContest.start_date" name="start_date" required>
-        </div>
-        <div class="form-group">
-          <label>End Date:</label>
-          <input type="datetime-local" [(ngModel)]="newContest.end_date" name="end_date" required>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Age Groups:</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" [(ngModel)]="newContest.age_groups" value="middle_school"> Middle School</label>
-          <label><input type="checkbox" [(ngModel)]="newContest.age_groups" value="high_school"> High School</label>
-          <label><input type="checkbox" [(ngModel)]="newContest.age_groups" value="college"> College</label>
-          <label><input type="checkbox" [(ngModel)]="newContest.age_groups" value="adults"> Adults</label>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Max Participants:</label>
-        <input type="number" [(ngModel)]="newContest.max_participants" name="max_participants">
-      </div>
-      <button type="submit" class="btn-primary" [disabled]="!contestForm.valid">Create Contest</button>
-    </form>
+  <!-- ── Loading / Error ─────────────────────────────────────────────── -->
+  <div *ngIf="loading" class="cm-empty">
+    <div class="spinner"></div>
+    <p>Loading contests&hellip;</p>
   </div>
+  <div *ngIf="error" class="cm-error">{{ error }}</div>
 
-  <div *ngIf="loading" class="loading">Loading contests...</div>
-  <div *ngIf="error" class="error-message">{{ error }}</div>
+  <!-- ── Contest grid ────────────────────────────────────────────────── -->
+  <div *ngIf="!loading && !error" class="cm-grid">
+    <div *ngFor="let c of getFilteredContests()"
+         class="card"
+         [class.card--selected]="selectedContest?.contest_id === c.contest_id"
+         (click)="selectContest(c)">
 
-  <div *ngIf="!loading && !error" class="contests-section">
-    <div class="contests-list">
-      <div *ngFor="let contest of contests" class="contest-card" [class.selected]="selectedContest?.contest_id === contest.contest_id" (click)="selectContest(contest)">
-        <div class="contest-status" [style.backgroundColor]="getStatusColor(contest.status)">
-          {{ contest.status }}
+      <!-- Status badge -->
+      <span class="badge-status" [ngClass]="'badge-status--' + c.status">
+        {{ getStatusLabel(c.status) }}
+      </span>
+
+      <!-- Card body -->
+      <h3 class="card-title">{{ c.name }}</h3>
+      <p class="card-desc">{{ c.description || 'No description' }}</p>
+
+      <!-- Sponsor row -->
+      <div *ngIf="c.sponsor_name" class="card-sponsor">
+        <img *ngIf="c.sponsor_logo_url" [src]="c.sponsor_logo_url" alt="" class="card-sponsor-logo" />
+        <span>Sponsored by <strong>{{ c.sponsor_name }}</strong></span>
+      </div>
+
+      <!-- Stats row -->
+      <div class="card-stats">
+        <div class="stat">
+          <span class="stat-value">{{ c.current_participants || 0 }}<span *ngIf="c.max_participants">/{{ c.max_participants }}</span></span>
+          <span class="stat-label">Players</span>
         </div>
-        <h3>{{ contest.name }}</h3>
-        <p class="description">{{ contest.description }}</p>
-        <div class="contest-details">
-          <div class="detail-group">
-            <span class="label">Age Groups:</span>
-            <div class="badges">
-              <span *ngFor="let group of contest.age_groups" class="badge">{{ group }}</span>
-            </div>
-          </div>
-          <div class="detail-group">
-            <span class="label">Duration:</span>
-            <p>{{ contest.start_date | date: 'short' }} - {{ contest.end_date | date: 'short' }}</p>
-          </div>
-          <div class="detail-group">
-            <span class="label">Participants:</span>
-            <p>{{ participants.length }}</p>
-          </div>
+        <div class="stat">
+          <span class="stat-value">{{ getDuration(c) }}</span>
+          <span class="stat-label">Duration</span>
         </div>
+        <div class="stat">
+          <span class="stat-value">${{ (c.starting_balance || 10000) | number }}</span>
+          <span class="stat-label">Starting $</span>
+        </div>
+      </div>
+
+      <!-- Age groups -->
+      <div class="card-tags">
+        <span *ngFor="let g of c.age_groups" class="tag">{{ g.replace('_', ' ') }}</span>
+      </div>
+
+      <!-- Actions -->
+      <div class="card-actions">
+        <button *ngIf="c.status === 'draft'" class="btn btn-green btn-sm" (click)="activateContest(c); $event.stopPropagation()">Activate</button>
+        <button *ngIf="c.status === 'active'" class="btn btn-outline btn-sm" (click)="concludeContest(c); $event.stopPropagation()">Conclude</button>
+        <button class="btn btn-ghost btn-sm" (click)="selectContest(c); $event.stopPropagation()">Details &rarr;</button>
       </div>
     </div>
 
-    <!-- Contest Details Panel -->
-    <div *ngIf="selectedContest" class="contest-details-panel">
-      <h3>{{ selectedContest.name }} - Management</h3>
+    <!-- Empty state -->
+    <div *ngIf="getFilteredContests().length === 0" class="cm-empty">
+      <p>No {{ statusFilter || '' }} contests yet</p>
+      <button class="btn btn-green" (click)="showCreateForm = true">Create your first contest</button>
+    </div>
+  </div>
 
-      <!-- Participants Table -->
-      <div class="participants-section">
-        <h4>Participants ({{ participants.length }})</h4>
-        <table class="participants-table">
+  <!-- ── Contest detail drawer ───────────────────────────────────────── -->
+  <div *ngIf="selectedContest" class="drawer-backdrop" (click)="deselectContest()"></div>
+  <aside *ngIf="selectedContest" class="drawer">
+    <div class="drawer-head">
+      <div>
+        <h2>{{ selectedContest.name }}</h2>
+        <span class="badge-status" [ngClass]="'badge-status--' + selectedContest.status" style="position:static;display:inline-block">
+          {{ getStatusLabel(selectedContest.status) }}
+        </span>
+      </div>
+      <button class="btn-close" (click)="deselectContest()">&times;</button>
+    </div>
+
+    <!-- Participants -->
+    <section class="drawer-section">
+      <h4>Participants ({{ participants.length }})</h4>
+      <div class="table-wrap">
+        <table>
           <thead>
-            <tr>
-              <th>User ID</th>
-              <th>Age Group</th>
-              <th>Portfolio Value</th>
-              <th>Return %</th>
-              <th>Positions</th>
-              <th>Entry Date</th>
-            </tr>
+            <tr><th>User ID</th><th>Age Group</th><th>Value</th><th>Return</th><th>Positions</th><th>Joined</th></tr>
           </thead>
           <tbody>
-            <tr *ngFor="let participant of participants">
-              <td>{{ participant.user_id }}</td>
-              <td>{{ participant.age_group }}</td>
-              <td>\${{ participant.portfolio.current_value | number:'1.2-2' }}</td>
-              <td>{{ participant.portfolio.total_return_percent | number:'1.2-2' }}%</td>
-              <td>{{ participant.portfolio.position_count }}</td>
-              <td>{{ participant.entry_date | date:'short' }}</td>
+            <tr *ngFor="let p of participants">
+              <td class="mono">{{ p.user_id | slice:0:8 }}&hellip;</td>
+              <td>{{ p.age_group }}</td>
+              <td>${{ p.portfolio.current_value | number:'1.2-2' }}</td>
+              <td [class.text-green]="p.portfolio.total_return_percent >= 0"
+                  [class.text-red]="p.portfolio.total_return_percent < 0">
+                {{ p.portfolio.total_return_percent | number:'1.2-2' }}%
+              </td>
+              <td>{{ p.portfolio.position_count }}</td>
+              <td>{{ p.entry_date | date:'shortDate' }}</td>
+            </tr>
+            <tr *ngIf="participants.length === 0">
+              <td colspan="6" class="text-muted" style="text-align:center">No participants yet</td>
             </tr>
           </tbody>
         </table>
       </div>
+    </section>
 
-      <!-- Notification Panel -->
-      <div class="notification-section">
-        <h4>Send Notifications</h4>
-        <button class="btn-secondary" (click)="showNotificationForm = !showNotificationForm">
-          {{ showNotificationForm ? 'Cancel' : 'Send Notification' }}
+    <!-- Notifications -->
+    <section class="drawer-section">
+      <div class="section-head">
+        <h4>Notifications</h4>
+        <button class="btn btn-outline btn-sm" (click)="showNotificationForm = !showNotificationForm">
+          {{ showNotificationForm ? 'Cancel' : 'Send' }}
         </button>
-
-        <div *ngIf="showNotificationForm" class="notification-form">
-          <div class="form-group">
-            <label>Notification Type:</label>
-            <select [(ngModel)]="notification.type">
-              <option value="invite">Contest Invite</option>
-              <option value="leaderboard">Leaderboard Update</option>
-              <option value="winner">Contest Winner</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Message:</label>
-            <textarea [(ngModel)]="notification.message" placeholder="Enter notification message..." rows="3"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Target Users (comma-separated tokens):</label>
-            <textarea [(ngModel)]="notification.userTokens" placeholder="user_token_1,user_token_2,..." rows="2"></textarea>
-          </div>
-          <button class="btn-primary" (click)="sendNotification()">Send Notification</button>
+      </div>
+      <div *ngIf="showNotificationForm" class="notif-form">
+        <div class="field">
+          <label>Type</label>
+          <select [(ngModel)]="notification.type">
+            <option value="invite">Contest Invite</option>
+            <option value="leaderboard">Leaderboard Update</option>
+            <option value="winner">Contest Winner</option>
+          </select>
         </div>
+        <div class="field">
+          <label>Message</label>
+          <textarea [(ngModel)]="notification.message" rows="3" placeholder="Notification message..."></textarea>
+        </div>
+        <div class="field">
+          <label>Target User Tokens (comma-separated)</label>
+          <textarea [(ngModel)]="notification.userTokens" rows="2" placeholder="token1,token2,..."></textarea>
+        </div>
+        <button class="btn btn-green" (click)="sendNotification()">Send Notification</button>
       </div>
+    </section>
+  </aside>
 
-      <!-- Payout Management (Future) -->
-      <div class="payout-section">
-        <h4>Prize Management</h4>
-        <p>Coming soon: Manage prize payouts for contest winners</p>
-      </div>
+  <!-- ── Create contest side panel ───────────────────────────────────── -->
+  <div *ngIf="showCreateForm" class="drawer-backdrop" (click)="closePanel()"></div>
+  <aside *ngIf="showCreateForm" class="drawer drawer--create">
+    <div class="drawer-head">
+      <h2>Create Contest</h2>
+      <button class="btn-close" (click)="closePanel()">&times;</button>
     </div>
-  </div>
+
+    <form (ngSubmit)="createContest()" #contestForm="ngForm" class="create-form">
+      <!-- Basic Info -->
+      <fieldset>
+        <legend>Basic Info</legend>
+        <div class="field">
+          <label>Contest Name *</label>
+          <input type="text" [(ngModel)]="newContest.name" name="name" required placeholder="e.g. Morning Trading Cup" />
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea [(ngModel)]="newContest.description" name="description" rows="3" placeholder="What's this contest about?"></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Schedule -->
+      <fieldset>
+        <legend>Schedule</legend>
+        <div class="field-row">
+          <div class="field">
+            <label>Start Date *</label>
+            <input type="datetime-local" [(ngModel)]="newContest.start_date" name="start_date" required />
+          </div>
+          <div class="field">
+            <label>End Date *</label>
+            <input type="datetime-local" [(ngModel)]="newContest.end_date" name="end_date" required />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Settings -->
+      <fieldset>
+        <legend>Settings</legend>
+        <div class="field-row">
+          <div class="field">
+            <label>Starting Balance ($)</label>
+            <input type="number" [(ngModel)]="newContest.starting_balance" name="starting_balance" />
+          </div>
+          <div class="field">
+            <label>Max Participants</label>
+            <input type="number" [(ngModel)]="newContest.max_participants" name="max_participants" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Age Groups</label>
+          <div class="checkbox-row">
+            <label class="ck"><input type="checkbox" value="middle_school" /> Middle School</label>
+            <label class="ck"><input type="checkbox" value="high_school" checked /> High School</label>
+            <label class="ck"><input type="checkbox" value="college" checked /> College</label>
+            <label class="ck"><input type="checkbox" value="adults" checked /> Adults</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Sponsor -->
+      <fieldset>
+        <legend>Sponsor <span class="legend-hint">(optional)</span></legend>
+        <div class="field">
+          <label>Sponsor Name</label>
+          <input type="text" [(ngModel)]="newContest.sponsor_name" name="sponsor_name" placeholder="e.g. Fidelity" />
+        </div>
+        <div class="field">
+          <label>Logo URL</label>
+          <input type="text" [(ngModel)]="newContest.sponsor_logo_url" name="sponsor_logo_url" placeholder="https://..." />
+        </div>
+        <div class="field">
+          <label>Tagline</label>
+          <input type="text" [(ngModel)]="newContest.sponsor_tagline" name="sponsor_tagline" placeholder="e.g. Invest wisely" />
+        </div>
+      </fieldset>
+
+      <!-- Buttons -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" (click)="closePanel()">Cancel</button>
+        <button type="submit" class="btn btn-green" [disabled]="!contestForm.valid">Create Contest</button>
+      </div>
+    </form>
+  </aside>
 </div>

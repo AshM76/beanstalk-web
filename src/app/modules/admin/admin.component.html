@@ -2,9 +2,9 @@
   <!-- Sidebar Navigation -->
   <div class="admin-sidebar" [class.collapsed]="!showSidebar">
     <div class="sidebar-header">
-      <h2>Beanstalk Admin</h2>
+      <h2>🌱 Beanstalk</h2>
       <button (click)="toggleSidebar()" class="toggle-btn">
-        <i class="material-icons">{{ showSidebar ? 'expand_less' : 'expand_more' }}</i>
+        {{ showSidebar ? '◀' : '▶' }}
       </button>
     </div>
 
@@ -19,8 +19,8 @@
             class="nav-item"
             [title]="item.label"
           >
-            <i class="material-icons">{{ item.icon }}</i>
-            <span *ngIf="showSidebar">{{ item.label }}</span>
+            <span class="nav-emoji">{{ item.emoji }}</span>
+            <span class="nav-label" *ngIf="showSidebar">{{ item.label }}</span>
           </a>
         </ng-container>
       </div>
@@ -35,7 +35,7 @@
         </div>
       </div>
       <button (click)="logout()" class="logout-btn" [title]="'Logout'">
-        <i class="material-icons">logout</i>
+        <span class="nav-emoji">🚪</span>
         <span *ngIf="showSidebar">Logout</span>
       </button>
     </div>
@@ -43,10 +43,6 @@
 
   <!-- Main Content Area -->
   <div class="admin-content">
-    <div class="content-header">
-      <h1>Admin Dashboard</h1>
-    </div>
-
     <div class="content-body">
       <router-outlet></router-outlet>
     </div>

@@ -13,36 +13,11 @@ export class AdminComponent implements OnInit {
   adminUser: AdminAccount | null = null;
   showSidebar = true;
   sidebarItems = [
-    {
-      label: 'Dashboard',
-      icon: 'dashboard',
-      path: '/admin/dashboard',
-      permission: null,
-    },
-    {
-      label: 'Users & Verification',
-      icon: 'people',
-      path: '/admin/users',
-      permission: 'view_users',
-    },
-    {
-      label: 'Contests',
-      icon: 'event',
-      path: '/admin/contests',
-      permission: 'manage_contests',
-    },
-    {
-      label: 'Compliance & EULA',
-      icon: 'description',
-      path: '/admin/compliance',
-      permission: 'manage_eulas',
-    },
-    {
-      label: 'Analytics',
-      icon: 'analytics',
-      path: '/admin/analytics',
-      permission: 'view_platform_metrics',
-    },
+    { label: 'Dashboard',          emoji: '\u{1F4CA}', path: '/admin/dashboard',   permission: null },
+    { label: 'Users & Verification', emoji: '\u{1F465}', path: '/admin/users',      permission: 'view_users' },
+    { label: 'Contests',           emoji: '\u{1F3C6}', path: '/admin/contests',    permission: 'manage_contests' },
+    { label: 'Compliance & EULA',  emoji: '\u{1F4DC}', path: '/admin/compliance',  permission: 'manage_eulas' },
+    { label: 'Analytics',          emoji: '\u{1F4C8}', path: '/admin/analytics',   permission: 'view_platform_metrics' },
   ];
 
   constructor(

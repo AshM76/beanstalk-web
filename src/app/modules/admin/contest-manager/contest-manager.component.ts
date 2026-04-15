@@ -14,6 +14,9 @@ interface Contest {
   max_participants: number;
   prizes?: any[];
   starting_balance?: number;
+  sponsor_name?: string;
+  sponsor_logo_url?: string;
+  sponsor_tagline?: string;
 }
 
 interface Participant {
@@ -55,7 +58,10 @@ export class ContestManagerComponent implements OnInit {
     starting_balance: 10000,
     prizes: [] as any[],
     max_participants: 100,
-    visibility: 'public'
+    visibility: 'public',
+    sponsor_name: '',
+    sponsor_logo_url: '',
+    sponsor_tagline: ''
   };
 
   // Notification form
@@ -156,7 +162,10 @@ export class ContestManagerComponent implements OnInit {
       starting_balance: 10000,
       prizes: [],
       max_participants: 100,
-      visibility: 'public'
+      visibility: 'public',
+      sponsor_name: '',
+      sponsor_logo_url: '',
+      sponsor_tagline: ''
     };
   }
 
@@ -186,5 +195,41 @@ export class ContestManagerComponent implements OnInit {
   getParticipationPercent(contest: Contest): number {
     if (!contest.max_participants) return 0;
     return Math.round((contest.current_participants / contest.max_participants) * 100);
+  }
+
+  getDuration(contest: Contest): string {
+    const start = new Date(contest.start_date);
+    const end = new Date(contest.end_date);
+    const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    if (days <= 0) return '—';
+    return days === 1 ? '1 day' : `${days} days`;
+  }
+
+  getStatusLabel(status: string): string {
+    return (status || 'draft').charAt(0).toUpperCase() + (status || 'draft').slice(1);
+  }
+
+  activateContest(contest: Contest): void {
+    this.http.put<any>(`${environment.baseUrl}/api/contests/${contest.contest_id}`, { status: 'active' }).subscribe({
+      next: () => { contest.status = 'active'; },
+      error: (err) => { console.error('Activate failed:', err); this.error = 'Failed to activate contest'; }
+    });
+  }
+
+  concludeContest(contest: Contest): void {
+    this.http.post<any>(`${environment.baseUrl}/api/contests/${contest.contest_id}/conclude`, {}).subscribe({
+      next: () => { contest.status = 'concluded'; },
+      error: (err) => { console.error('Conclude failed:', err); this.error = 'Failed to conclude contest'; }
+    });
+  }
+
+  closePanel(): void {
+    this.showCreateForm = false;
+    this.resetNewContest();
+  }
+
+  deselectContest(): void {
+    this.selectedContest = null;
+    this.participants = [];
   }
 }
