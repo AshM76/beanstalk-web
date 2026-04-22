@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/auth/auth.service';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,11 +8,19 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
+  userName = '';
+  initials = '';
 
-  version: string = '';
-  constructor(private router: Router, private _authService: AuthService) { }
+  constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.version = environment.version;
+    this.userName = this.authService.accountUsername || '';
+    const parts = this.userName.split(' ');
+    this.initials = parts.map(p => p[0]).join('').toUpperCase().substring(0, 2);
+  }
+
+  logout(): void {
+    this.authService.signOut();
+    this.router.navigateByUrl('/sign-in');
   }
 }
