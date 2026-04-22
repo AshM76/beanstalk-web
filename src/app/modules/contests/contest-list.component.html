@@ -1,0 +1,67 @@
+<div class="cm-page">
+    <header class="cm-header">
+        <div>
+            <h1>Contests</h1>
+            <p class="subtitle">Browse and join investment contests</p>
+        </div>
+    </header>
+
+    <!-- Filters -->
+    <div class="cm-filters">
+        <button class="chip" [class.active]="!statusFilter" (click)="statusFilter = ''">All</button>
+        <button class="chip" [class.active]="statusFilter === 'active'" (click)="statusFilter = 'active'">
+            <span class="dot dot-active"></span> Active
+        </button>
+        <button class="chip" [class.active]="statusFilter === 'draft'" (click)="statusFilter = 'draft'">
+            <span class="dot dot-draft"></span> Upcoming
+        </button>
+        <button class="chip" [class.active]="statusFilter === 'concluded'" (click)="statusFilter = 'concluded'">
+            <span class="dot dot-ended"></span> Concluded
+        </button>
+    </div>
+
+    <!-- Contest Cards -->
+    <div class="cards-grid" *ngIf="!loading">
+        <div class="card" *ngFor="let c of filteredContests" [routerLink]="['/contests', c.contest_id]">
+            <span class="badge-status" [ngClass]="'badge-status--' + c.status">
+                {{ c.status | titlecase }}
+            </span>
+
+            <h3 class="card-title">{{ c.name }}</h3>
+            <p class="card-desc">{{ c.description }}</p>
+
+            <div class="card-sponsor" *ngIf="c.sponsor_name">
+                <img [src]="c.sponsor_logo_url" alt="" class="card-sponsor-logo" *ngIf="c.sponsor_logo_url">
+                <span>Sponsored by <strong>{{ c.sponsor_name }}</strong></span>
+            </div>
+
+            <div class="card-stats">
+                <div class="stat">
+                    <span class="stat-value">{{ c.participants }}/{{ c.max_participants }}</span>
+                    <span class="stat-label">PLAYERS</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">{{ getDuration(c) }} days</span>
+                    <span class="stat-label">DURATION</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">${{ c.starting_balance | number }}</span>
+                    <span class="stat-label">STARTING $</span>
+                </div>
+            </div>
+
+            <div class="card-tags">
+                <span class="tag" *ngFor="let g of c.age_groups">{{ formatAgeGroup(g) }}</span>
+            </div>
+
+            <div class="card-actions">
+                <button class="btn btn-green btn-sm" *ngIf="c.status === 'draft'">Join</button>
+                <span class="btn btn-ghost btn-sm">Details →</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading" *ngIf="loading">
+        <p-progressSpinner></p-progressSpinner>
+    </div>
+</div>
