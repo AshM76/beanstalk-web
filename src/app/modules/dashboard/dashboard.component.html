@@ -1,22 +1,114 @@
-<!-- Panel -->
-<div class="grid flex-column" style="height: 100%;">
-    <!-- Title-Panel -->
-    <div class="col-12 h-9rem p-7">
-        <h2>
-            <b>Hi {{ name }},</b> your collective data is all set
-        </h2>
-    </div>
-    <!-- Content-Panel -->
-    <div class="col-12 h-screen">
+<div class="dash-page">
+    <!-- Welcome -->
+    <header class="dash-header">
+        <div>
+            <h1>Welcome back, {{ name }}</h1>
+            <p class="subtitle">Here's what's happening with your contests and portfolio.</p>
+        </div>
+    </header>
 
-        <div class="grid align-items-center p-5 yBackgroundGray">
-            <p-card class="col-4" header="Profile" [style]="{'height': '15rem', 'cursor': 'pointer'}"
-                [routerLink]="['/dispensary/profile']"></p-card>
-            <p-card class="col-4" header="Chat" [style]="{'height': '15rem', 'cursor': 'pointer'}"
-                [routerLink]="['/chat']"></p-card>
-            <p-card class="col-4" header="Deals" [style]="{'height': '15rem', 'cursor': 'pointer'}"
-                [routerLink]="['/deals']"></p-card>
+    <!-- Metrics -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon contests-icon">🏆</div>
+            <div class="metric-content">
+                <div class="metric-label">Active Contests</div>
+                <div class="metric-value">{{ activeContests.length }}</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon portfolio-icon">📈</div>
+            <div class="metric-content">
+                <div class="metric-label">Portfolio Value</div>
+                <div class="metric-value">{{ portfolio?.total_value ? ('$' + (portfolio.total_value | number:'1.0-0')) : '--' }}</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon total-icon">📊</div>
+            <div class="metric-content">
+                <div class="metric-label">Total Contests</div>
+                <div class="metric-value">{{ contests.length }}</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon completed-icon">✅</div>
+            <div class="metric-content">
+                <div class="metric-label">Completed</div>
+                <div class="metric-value">{{ concludedContests.length }}</div>
+            </div>
         </div>
     </div>
+
+    <!-- Active Contests -->
+    <section class="dash-section" *ngIf="activeContests.length > 0">
+        <div class="section-header">
+            <h2>Active Contests</h2>
+            <a routerLink="/contests" class="see-all">View all →</a>
+        </div>
+        <div class="cards-grid">
+            <div class="card" *ngFor="let c of activeContests" [routerLink]="['/contests', c.contest_id]">
+                <span class="badge-status badge-status--active">Active</span>
+                <h3 class="card-title">{{ c.name }}</h3>
+                <p class="card-desc">{{ c.description }}</p>
+
+                <div class="card-sponsor" *ngIf="c.sponsor_name">
+                    <img [src]="c.sponsor_logo_url" alt="" class="card-sponsor-logo" *ngIf="c.sponsor_logo_url">
+                    <span>Sponsored by <strong>{{ c.sponsor_name }}</strong></span>
+                </div>
+
+                <div class="card-stats">
+                    <div class="stat">
+                        <span class="stat-value">{{ c.participants }}/{{ c.max_participants }}</span>
+                        <span class="stat-label">PLAYERS</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">{{ getDuration(c) }} days</span>
+                        <span class="stat-label">DURATION</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">${{ c.starting_balance | number }}</span>
+                        <span class="stat-label">STARTING $</span>
+                    </div>
+                </div>
+
+                <div class="card-tags">
+                    <span class="tag" *ngFor="let g of c.age_groups">{{ formatAgeGroup(g) }}</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Positions -->
+    <section class="dash-section" *ngIf="portfolio?.positions?.length > 0">
+        <div class="section-header">
+            <h2>Your Portfolio</h2>
+            <a routerLink="/portfolio" class="see-all">View details →</a>
+        </div>
+        <div class="positions-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Shares</th>
+                        <th>Avg Cost</th>
+                        <th>Current Price</th>
+                        <th>Market Value</th>
+                        <th>Return</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let pos of portfolio.positions">
+                        <td class="symbol">{{ pos.symbol }}</td>
+                        <td>{{ pos.shares }}</td>
+                        <td>{{ pos.average_cost | currency }}</td>
+                        <td>{{ pos.current_price | currency }}</td>
+                        <td><strong>{{ pos.market_value | currency }}</strong></td>
+                        <td [class.positive]="pos.return_percent > 0" [class.negative]="pos.return_percent < 0">
+                            {{ pos.return_percent > 0 ? '+' : '' }}{{ pos.return_percent | number:'1.2-2' }}%
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 </div>
-<!-- End-Panel -->
