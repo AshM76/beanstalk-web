@@ -59,10 +59,20 @@ export class ContestManagerComponent implements OnInit {
     prizes: [] as any[],
     max_participants: 100,
     visibility: 'public',
+    timezone: 'America/New_York',
     sponsor_name: '',
     sponsor_logo_url: '',
     sponsor_tagline: ''
   };
+
+  timezoneOptions = [
+    { value: 'America/New_York',    label: 'Eastern Time (ET)' },
+    { value: 'America/Chicago',     label: 'Central Time (CT)' },
+    { value: 'America/Denver',      label: 'Mountain Time (MT)' },
+    { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
+    { value: 'Pacific/Honolulu',    label: 'Hawaii (HT)' },
+    { value: 'UTC',                 label: 'UTC' },
+  ];
 
   // Notification form
   showNotificationForm = false;
@@ -163,6 +173,7 @@ export class ContestManagerComponent implements OnInit {
       prizes: [],
       max_participants: 100,
       visibility: 'public',
+      timezone: 'America/New_York',
       sponsor_name: '',
       sponsor_logo_url: '',
       sponsor_tagline: ''
@@ -198,11 +209,27 @@ export class ContestManagerComponent implements OnInit {
   }
 
   getDuration(contest: Contest): string {
+    if (!contest.start_date || !contest.end_date) return '—';
     const start = new Date(contest.start_date);
     const end = new Date(contest.end_date);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) return '—';
     const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-    if (days <= 0) return '—';
+    if (days <= 0 || isNaN(days)) return '—';
     return days === 1 ? '1 day' : `${days} days`;
+  }
+
+  getTimezoneShort(contest: any): string {
+    const tz = contest.timezone;
+    if (!tz) return '';
+    const map: Record<string, string> = {
+      'America/New_York': 'ET',
+      'America/Chicago': 'CT',
+      'America/Denver': 'MT',
+      'America/Los_Angeles': 'PT',
+      'Pacific/Honolulu': 'HT',
+      'UTC': 'UTC',
+    };
+    return map[tz] || tz;
   }
 
   getStatusLabel(status: string): string {

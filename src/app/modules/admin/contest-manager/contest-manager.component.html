@@ -64,7 +64,7 @@
           <span class="stat-label">Players</span>
         </div>
         <div class="stat">
-          <span class="stat-value">{{ getDuration(c) }}</span>
+          <span class="stat-value">{{ getDuration(c) }}<span *ngIf="getTimezoneShort(c)"> · {{ getTimezoneShort(c) }}</span></span>
           <span class="stat-label">Duration</span>
         </div>
         <div class="stat">
@@ -198,6 +198,12 @@
             <label>End Date *</label>
             <input type="datetime-local" [(ngModel)]="newContest.end_date" name="end_date" required />
           </div>
+        </div>
+        <div class="field">
+          <label>Timezone</label>
+          <select [(ngModel)]="newContest.timezone" name="timezone">
+            <option *ngFor="let tz of timezoneOptions" [value]="tz.value">{{ tz.label }}</option>
+          </select>
         </div>
       </fieldset>
 
