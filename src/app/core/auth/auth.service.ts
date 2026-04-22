@@ -124,26 +124,15 @@ export class AuthService {
             return throwError(() => new Error('User is already logged in.'));
         }
 
-        return this._httpClient.post<ApiResponse>(`${environment.baseUrl}/web/auth/dispensary/signin`, credentials).pipe(
-            switchMap((response: ApiResponse) => {
-                
-                // Store the access token in the local storage
+        return this._httpClient.post<any>(`${environment.baseUrl}/api/auth/login`, credentials).pipe(
+            switchMap((response: any) => {
                 this.accessToken = response.token;
-
-                // Set the authenticated flag to true
                 this._authenticated = true;
-
-                // Account type 
-                this.accountType = response.data.dispensaryType;
-
-                this.accountId = this.accountType === 'main' ? response.data.dispensaryId : response.data.accountId;
-                this.accountUsername = this.accountType === 'main' ? response.data.dispensaryName : response.data.accountUsername;
-
-                // Store the dispensary id on the dispensary service
-                this._dispensaryService.dispensaryId = response.data.dispensaryId;
-                this._dispensaryService.dispensaryName = response.data.dispensaryName;
-
-                // Return a new observable with the response
+                this.accountType = 'main';
+                this.accountId = response.user_id;
+                this.accountUsername = response.name;
+                this._dispensaryService.dispensaryId = response.user_id;
+                this._dispensaryService.dispensaryName = response.name;
                 return of(response);
             }),
             catchError(err => of(err))

@@ -21,17 +21,17 @@
                         <i class="pi pi-user"></i>
                     </span>
                     <span class="p-float-label">
-                        <input pInputText type="email" class="mr-2" formControlName="dispensary_email" />
+                        <input pInputText type="email" class="mr-2" formControlName="email" />
                         <label for="inputgroup">Email</label>
                     </span>
                 </div>
 
                 <span style="margin-top: 5px;">
                     <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
-                        *ngIf="(signInFormControl['dispensary_email'].errors?.['required'] && signInFormControl['dispensary_email'].touched)"
+                        *ngIf="(signInFormControl['email'].errors?.['required'] && signInFormControl['email'].touched)"
                         text="Email is required"></p-message>
                     <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
-                        *ngIf="(signInFormControl['dispensary_email'].errors?.['email'] && signInFormControl['dispensary_email'].touched)"
+                        *ngIf="(signInFormControl['email'].errors?.['email'] && signInFormControl['email'].touched)"
                         text="Format is invalid"></p-message>
                 </span>
 
@@ -40,18 +40,18 @@
                         <i class="pi pi-lock"></i>
                     </span>
                     <span class="p-float-label">
-                        <input pInputText type="password" class="mr-2" formControlName="dispensary_password" />
+                        <input pInputText type="password" class="mr-2" formControlName="password" />
                         <label for="inputgroup">Password</label>
                     </span>
                 </div>
 
                 <span style="margin-top: 5px;">
                     <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
-                        *ngIf="(signInFormControl['dispensary_password'].errors?.['required'] && signInFormControl['dispensary_password'].touched)"
+                        *ngIf="(signInFormControl['password'].errors?.['required'] && signInFormControl['password'].touched)"
                         text="Password is required">
                     </p-message>
                     <p-message severity="error" [style]="{height: '20px'}" class="mr-2"
-                        *ngIf="(signInFormControl['dispensary_password'].errors?.['pattern'] && signInFormControl['dispensary_password'].touched)"
+                        *ngIf="(signInFormControl['password'].errors?.['pattern'] && signInFormControl['password'].touched)"
                         text="Password must be at least 6 characters"></p-message>
                 </span>
             </div>
