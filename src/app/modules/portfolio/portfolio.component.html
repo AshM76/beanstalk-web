@@ -1,0 +1,112 @@
+<div class="p-4">
+    <h2 style="color: #057671;"><i class="pi pi-chart-line mr-2"></i>My Portfolio</h2>
+
+    <div *ngIf="loading" class="flex justify-content-center p-6">
+        <p-progressSpinner></p-progressSpinner>
+    </div>
+
+    <div *ngIf="!loading">
+        <!-- Portfolio Summary Cards -->
+        <div class="grid mt-3" *ngIf="portfolio">
+            <div class="col-12 md:col-4">
+                <p-card>
+                    <div class="flex flex-column align-items-center">
+                        <span style="color: #808080; font-size: 13px;">Total Value</span>
+                        <span style="font-size: 32px; font-weight: bold; color: #057671;">
+                            {{ portfolio.total_value | currency }}
+                        </span>
+                    </div>
+                </p-card>
+            </div>
+            <div class="col-12 md:col-4">
+                <p-card>
+                    <div class="flex flex-column align-items-center">
+                        <span style="color: #808080; font-size: 13px;">Cash Balance</span>
+                        <span style="font-size: 32px; font-weight: bold; color: #057671;">
+                            {{ portfolio.cash_balance | currency }}
+                        </span>
+                    </div>
+                </p-card>
+            </div>
+            <div class="col-12 md:col-4">
+                <p-card>
+                    <div class="flex flex-column align-items-center">
+                        <span style="color: #808080; font-size: 13px;">Total Return</span>
+                        <span style="font-size: 32px; font-weight: bold;" [class]="getReturnClass(totalReturn)">
+                            {{ totalReturn > 0 ? '+' : '' }}{{ totalReturn | number:'1.2-2' }}%
+                        </span>
+                    </div>
+                </p-card>
+            </div>
+        </div>
+
+        <p-tabView class="mt-4" [(activeIndex)]="activeTab">
+            <!-- Positions Tab -->
+            <p-tabPanel header="Positions">
+                <p-table [value]="portfolio?.positions || []" styleClass="p-datatable-sm p-datatable-striped" class="mt-2">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Shares</th>
+                            <th>Avg Cost</th>
+                            <th>Current Price</th>
+                            <th>Market Value</th>
+                            <th>Gain/Loss</th>
+                            <th>Return %</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-pos>
+                        <tr>
+                            <td><b>{{ pos.symbol }}</b></td>
+                            <td>{{ pos.shares | number: sharesFormat(pos.asset_class) }}</td>
+                            <td>{{ pos.average_cost | currency }}</td>
+                            <td>{{ pos.current_price | currency }}</td>
+                            <td><b>{{ pos.market_value | currency }}</b></td>
+                            <td [class]="getReturnClass(pos.market_value - (pos.average_cost * pos.shares))">
+                                {{ (pos.market_value - (pos.average_cost * pos.shares)) | currency }}
+                            </td>
+                            <td [class]="getReturnClass(pos.return_percent)">
+                                <b>{{ pos.return_percent > 0 ? '+' : '' }}{{ pos.return_percent | number:'1.2-2' }}%</b>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                        <tr><td colspan="7" class="text-center p-4" style="color: #808080;">No positions yet. Start trading to build your portfolio!</td></tr>
+                    </ng-template>
+                </p-table>
+            </p-tabPanel>
+
+            <!-- Transactions Tab -->
+            <p-tabPanel header="Transaction History">
+                <p-table [value]="transactions" styleClass="p-datatable-sm p-datatable-striped" class="mt-2"
+                         [paginator]="transactions.length > 10" [rows]="10">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Symbol</th>
+                            <th>Shares</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-tx>
+                        <tr>
+                            <td>{{ tx.created_at | date:'short' }}</td>
+                            <td>
+                                <p-badge [value]="tx.type | titlecase" [severity]="tx.type === 'buy' ? 'success' : 'danger'"></p-badge>
+                            </td>
+                            <td><b>{{ tx.symbol }}</b></td>
+                            <td>{{ tx.shares | number: sharesFormat(tx.asset_class) }}</td>
+                            <td>{{ tx.price | currency }}</td>
+                            <td>{{ tx.total | currency }}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                        <tr><td colspan="6" class="text-center p-4" style="color: #808080;">No transactions yet.</td></tr>
+                    </ng-template>
+                </p-table>
+            </p-tabPanel>
+        </p-tabView>
+    </div>
+</div>
