@@ -9,9 +9,7 @@ import { AuthGuard } from "./core/auth/guards/auth.guard";
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
 
-  // Admin console — standalone (not wrapped in LayoutComponent so the admin
-  // module owns its own shell). Access is gated by AdminGuard inside the
-  // module; in dev bypass mode (environment.devBypassAuth) it opens freely.
+  // Admin console
   {
     path: 'admin',
     loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule)
@@ -31,16 +29,16 @@ export const routes: Routes = [
     ]
   },
 
-  // Auth routes for authenticated users
+  // Authenticated routes
   {
     path: '',
     component: LayoutComponent,
     canActivate:[AuthGuard],
     children: [
       { path: 'dashboard', loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule) },
-      { path: 'dispensary', loadChildren: () => import('./modules/dispensary-profile/dispensary-profile.module').then(m => m.DispensaryProfileModule)},
-      { path: 'deals', loadChildren: ()=>import('./modules/deals/deals.module').then(m => m.DealsModule)},
-      { path: 'chat', loadChildren: () => import('./modules/chat/chat.module').then(m => m.ChatModule)}
+      { path: 'contests', loadChildren: () => import('./modules/contests/contests.module').then(m => m.ContestsModule) },
+      { path: 'portfolio', loadChildren: () => import('./modules/portfolio/portfolio.module').then(m => m.PortfolioModule) },
+      { path: 'trading', loadChildren: () => import('./modules/trading/trading.module').then(m => m.TradingModule) }
     ]
   }
 ];

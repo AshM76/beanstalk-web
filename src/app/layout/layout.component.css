@@ -1,4 +1,11 @@
-.beanstalk-content {
-    height: 100%;
-    margin: 0;
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.main-content {
+    flex: 1;
+    background: #FAFAFA;
+    overflow-y: auto;
+    height: 100vh;
 }
