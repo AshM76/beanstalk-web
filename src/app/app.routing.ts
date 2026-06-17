@@ -22,10 +22,13 @@ export const routes: Routes = [
     canActivateChild: [NoAuthGuard],
     component: AppComponent,
     children: [
+      // sign-up and onboarding were the cannabis-era dispensary signup flow
+      // (youkti lineage). Their backends are unmounted in beanstalk-api
+      // (chore/g-unmount-deprecated-surfaces) — left out of routing so
+      // the URLs SPA-404 instead of loading a UI that calls 404'd APIs.
+      // Admin login still works: AuthService.signIn hits /api/auth/login.
       { path: 'reset-password', loadChildren: () => import('./modules/auth/reset-password/reset-password.module').then(m => m.ResetPasswordModule) },
-      { path: 'sign-in', loadChildren: () => import('./modules/auth/sign-in/sign-in.module').then(m => m.SignInModule) },
-      { path: 'sign-up', loadChildren: () => import('./modules/auth/sign-up/sign-up.module').then(m => m.SignUpModule) },
-      { path: 'onboarding', loadChildren: () => import('./modules/onboarding/onboarding.module').then(m => m.OnboardingModule) }
+      { path: 'sign-in', loadChildren: () => import('./modules/auth/sign-in/sign-in.module').then(m => m.SignInModule) }
     ]
   },
 
