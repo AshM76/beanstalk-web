@@ -5,6 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { PrimeNgModule } from './shared/prime-ng.module';
 
+import { CoreModule } from './core/core.module';
 import { LayoutModule } from './layout/layout.module';
 
 import { AuthService } from './core/auth/auth.service';
@@ -24,6 +25,7 @@ import { routes } from './app.routing';
     BrowserAnimationsModule,
     RouterModule.forRoot(routes, {useHash: true}),
     HttpClientModule,
+    CoreModule,
     LayoutModule,
     PrimeNgModule
   ],
