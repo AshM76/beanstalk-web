@@ -14,6 +14,8 @@ interface Contest {
   max_participants: number;
   prizes?: any[];
   starting_balance?: number;
+  short_name?: string;
+  timezone?: string;
   sponsor_name?: string;
   sponsor_logo_url?: string;
   sponsor_tagline?: string;
@@ -47,10 +49,15 @@ export class ContestManagerComponent implements OnInit {
   error: string | null = null;
   statusFilter = '';
 
-  // Create contest form
+  // Create/edit contest form. When editingContestId is set the drawer edits
+  // an existing contest via PUT; otherwise it creates via POST.
   showCreateForm = false;
+  editingContestId: string | null = null;
+  uploadingLogo = false;
+  logoError: string | null = null;
   newContest = {
     name: '',
+    short_name: '',
     description: '',
     age_groups: ['high_school', 'college', 'adults'],
     start_date: '',
@@ -122,18 +129,118 @@ export class ContestManagerComponent implements OnInit {
     });
   }
 
-  createContest(): void {
+  saveContest(): void {
+    if (this.editingContestId) {
+      this.http.put<any>(`${environment.baseUrl}/api/contests/${this.editingContestId}`, this.newContest).subscribe({
+        next: (updated) => {
+          const i = this.contests.findIndex((c) => c.contest_id === this.editingContestId);
+          if (i >= 0) this.contests[i] = { ...this.contests[i], ...updated };
+          this.closePanel();
+        },
+        error: (err) => {
+          console.error('Failed to update contest:', err);
+          this.error = 'Failed to update contest';
+        },
+      });
+      return;
+    }
+
     this.http.post<any>(`${environment.baseUrl}/api/contests`, this.newContest).subscribe({
       next: (response) => {
         this.contests.unshift(response);
-        this.showCreateForm = false;
-        this.resetNewContest();
+        this.closePanel();
       },
       error: (err) => {
         console.error('Failed to create contest:', err);
         this.error = 'Failed to create contest';
       },
     });
+  }
+
+  /** Open the drawer pre-filled from the contest's full detail record. */
+  openEdit(contest: Contest): void {
+    this.http.get<any>(`${environment.baseUrl}/api/contests/${contest.contest_id}`).subscribe({
+      next: (d) => {
+        this.newContest = {
+          name: d.name || '',
+          short_name: d.short_name || '',
+          description: d.description || '',
+          age_groups: d.age_groups || ['high_school', 'college', 'adults'],
+          start_date: this.toInputDate(d.start_date),
+          end_date: this.toInputDate(d.end_date),
+          starting_balance: d.starting_balance ?? 10000,
+          prizes: d.prizes || [],
+          max_participants: d.max_participants ?? 100,
+          visibility: d.visibility || 'public',
+          timezone: d.timezone || 'America/New_York',
+          sponsor_name: d.sponsor_name || '',
+          sponsor_logo_url: d.sponsor_logo_url || '',
+          sponsor_tagline: d.sponsor_tagline || '',
+        };
+        this.editingContestId = contest.contest_id;
+        this.logoError = null;
+        this.showCreateForm = true;
+      },
+      error: (err) => {
+        console.error('Failed to load contest for editing:', err);
+        this.error = 'Failed to load contest for editing';
+      },
+    });
+  }
+
+  /** ISO date → value accepted by <input type="datetime-local">. */
+  private toInputDate(iso: string | Date | null): string {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  /** Upload a picked logo file to the API's asset store and fill the URL. */
+  onLogoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const allowed = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+    if (!allowed.includes(file.type)) {
+      this.logoError = 'Use a PNG, JPEG, WebP, or GIF image.';
+      input.value = '';
+      return;
+    }
+    if (file.size > 512 * 1024) {
+      this.logoError = 'Image too large — max 512 KB.';
+      input.value = '';
+      return;
+    }
+
+    this.logoError = null;
+    this.uploadingLogo = true;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(',').pop() || '';
+      this.http.post<any>(`${environment.baseUrl}/api/contest-assets`, {
+        content_type: file.type,
+        data: base64,
+      }).subscribe({
+        next: (res) => {
+          // Absolute URL so the mobile app can load it as a plain network image.
+          this.newContest.sponsor_logo_url = `${environment.baseUrl}${res.url}`;
+          this.uploadingLogo = false;
+        },
+        error: (err) => {
+          console.error('Logo upload failed:', err);
+          this.logoError = 'Upload failed — try again or paste a URL.';
+          this.uploadingLogo = false;
+        },
+      });
+    };
+    reader.onerror = () => {
+      this.logoError = 'Could not read the file.';
+      this.uploadingLogo = false;
+    };
+    reader.readAsDataURL(file);
   }
 
   sendNotification(): void {
@@ -165,6 +272,7 @@ export class ContestManagerComponent implements OnInit {
   private resetNewContest(): void {
     this.newContest = {
       name: '',
+      short_name: '',
       description: '',
       age_groups: ['high_school', 'college', 'adults'],
       start_date: '',
@@ -252,6 +360,9 @@ export class ContestManagerComponent implements OnInit {
 
   closePanel(): void {
     this.showCreateForm = false;
+    this.editingContestId = null;
+    this.uploadingLogo = false;
+    this.logoError = null;
     this.resetNewContest();
   }
 

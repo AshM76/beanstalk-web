@@ -81,6 +81,7 @@
       <!-- Actions -->
       <div class="card-actions">
         <button *ngIf="c.status === 'draft'" class="btn btn-green btn-sm" (click)="activateContest(c); $event.stopPropagation()">Activate</button>
+        <button *ngIf="c.status === 'draft' || c.status === 'active'" class="btn btn-outline btn-sm" (click)="openEdit(c); $event.stopPropagation()">Edit</button>
         <button *ngIf="c.status === 'active'" class="btn btn-outline btn-sm" (click)="concludeContest(c); $event.stopPropagation()">Conclude</button>
         <button class="btn btn-ghost btn-sm" (click)="selectContest(c); $event.stopPropagation()">Details &rarr;</button>
       </div>
@@ -168,17 +169,21 @@
   <div *ngIf="showCreateForm" class="drawer-backdrop" (click)="closePanel()"></div>
   <aside *ngIf="showCreateForm" class="drawer drawer--create">
     <div class="drawer-head">
-      <h2>Create Contest</h2>
+      <h2>{{ editingContestId ? 'Edit Contest' : 'Create Contest' }}</h2>
       <button class="btn-close" (click)="closePanel()">&times;</button>
     </div>
 
-    <form (ngSubmit)="createContest()" #contestForm="ngForm" class="create-form">
+    <form (ngSubmit)="saveContest()" #contestForm="ngForm" class="create-form">
       <!-- Basic Info -->
       <fieldset>
         <legend>Basic Info</legend>
         <div class="field">
           <label>Contest Name *</label>
           <input type="text" [(ngModel)]="newContest.name" name="name" required placeholder="e.g. Morning Trading Cup" />
+        </div>
+        <div class="field">
+          <label>Short Name <span class="field-hint">shown on phone chips &amp; pickers</span></label>
+          <input type="text" [(ngModel)]="newContest.short_name" name="short_name" maxlength="20" placeholder="e.g. Morning Cup" />
         </div>
         <div class="field">
           <label>Description</label>
@@ -239,8 +244,17 @@
           <input type="text" [(ngModel)]="newContest.sponsor_name" name="sponsor_name" placeholder="e.g. Fidelity" />
         </div>
         <div class="field">
-          <label>Logo URL</label>
-          <input type="text" [(ngModel)]="newContest.sponsor_logo_url" name="sponsor_logo_url" placeholder="https://..." />
+          <label>Logo</label>
+          <div class="logo-upload">
+            <img *ngIf="newContest.sponsor_logo_url" [src]="newContest.sponsor_logo_url" alt="" class="logo-preview" />
+            <label class="btn btn-outline btn-sm logo-pick">
+              {{ uploadingLogo ? 'Uploading…' : (newContest.sponsor_logo_url ? 'Replace Image' : 'Upload Image') }}
+              <input type="file" accept="image/png,image/jpeg,image/webp,image/gif"
+                     (change)="onLogoSelected($event)" [disabled]="uploadingLogo" hidden />
+            </label>
+          </div>
+          <p *ngIf="logoError" class="field-error">{{ logoError }}</p>
+          <input type="text" [(ngModel)]="newContest.sponsor_logo_url" name="sponsor_logo_url" placeholder="…or paste an image URL" />
         </div>
         <div class="field">
           <label>Tagline</label>
@@ -251,7 +265,9 @@
       <!-- Buttons -->
       <div class="form-actions">
         <button type="button" class="btn btn-ghost" (click)="closePanel()">Cancel</button>
-        <button type="submit" class="btn btn-green" [disabled]="!contestForm.valid">Create Contest</button>
+        <button type="submit" class="btn btn-green" [disabled]="!contestForm.valid || uploadingLogo">
+          {{ editingContestId ? 'Save Changes' : 'Create Contest' }}
+        </button>
       </div>
     </form>
   </aside>
