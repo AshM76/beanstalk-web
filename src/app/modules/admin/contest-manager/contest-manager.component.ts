@@ -129,7 +129,33 @@ export class ContestManagerComponent implements OnInit {
     });
   }
 
+  addPrize(): void {
+    this.newContest.prizes = [
+      ...(this.newContest.prizes || []),
+      {
+        prize_rank: (this.newContest.prizes?.length || 0) + 1,
+        prize_type: 'cash',
+        prize_value: '',
+        prize_description: '',
+      },
+    ];
+  }
+
+  removePrize(index: number): void {
+    this.newContest.prizes = (this.newContest.prizes || []).filter(
+      (_: any, i: number) => i !== index
+    );
+  }
+
   saveContest(): void {
+    // Drop empty prize rows so blanks never reach the API (and the app's Prize
+    // tile). A prize counts only if it has a value or a description.
+    this.newContest.prizes = (this.newContest.prizes || []).filter(
+      (p: any) =>
+        (p?.prize_value && `${p.prize_value}`.trim()) ||
+        (p?.prize_description && `${p.prize_description}`.trim())
+    );
+
     if (this.editingContestId) {
       this.http.put<any>(`${environment.baseUrl}/api/contests/${this.editingContestId}`, this.newContest).subscribe({
         next: (updated) => {
