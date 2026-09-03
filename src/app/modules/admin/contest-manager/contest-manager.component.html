@@ -236,6 +236,29 @@
         </div>
       </fieldset>
 
+      <!-- Prizes -->
+      <fieldset>
+        <legend>Prizes <span class="legend-hint">(shown on the contest's Prize tile in the app)</span></legend>
+        <div class="field" *ngFor="let prize of newContest.prizes; let i = index">
+          <div class="field-row">
+            <div class="field">
+              <label>Place</label>
+              <input type="number" min="1" [(ngModel)]="prize.prize_rank" [name]="'prize_rank_' + i" />
+            </div>
+            <div class="field">
+              <label>Prize</label>
+              <input type="text" [(ngModel)]="prize.prize_value" [name]="'prize_value_' + i"
+                     placeholder="e.g. $50 STEP credit" />
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" style="align-self: flex-end;"
+                    (click)="removePrize(i)">Remove</button>
+          </div>
+          <input type="text" [(ngModel)]="prize.prize_description" [name]="'prize_desc_' + i"
+                 placeholder="Description (optional) — e.g. $50 deposited to your STEP account" />
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" (click)="addPrize()">+ Add Prize</button>
+      </fieldset>
+
       <!-- Sponsor -->
       <fieldset>
         <legend>Sponsor <span class="legend-hint">(optional)</span></legend>
