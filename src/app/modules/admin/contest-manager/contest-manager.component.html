@@ -236,6 +236,45 @@
         </div>
       </fieldset>
 
+      <!-- Entry Requirements (learning gate) -->
+      <fieldset>
+        <legend>Entry Requirements <span class="legend-hint">(learning users must complete before they can join)</span></legend>
+        <p class="field-hint" style="margin: 0 0 12px;">
+          Leave everything blank for an open contest. Set a minimum XP and/or pick lessons
+          that must be <strong>passed</strong> — both apply together when set. This gates the
+          <em>Join</em> button in the app and points players to the Learn tab.
+        </p>
+
+        <div class="field">
+          <label>Minimum XP <span class="field-hint">0 = no XP requirement</span></label>
+          <input type="number" min="0" step="10"
+                 [(ngModel)]="newContest.entry_requirements.min_xp" name="entry_min_xp"
+                 placeholder="e.g. 300" />
+        </div>
+
+        <div class="field">
+          <label>
+            Required Lessons
+            <span class="field-hint">
+              {{ requiredLessonCount() === 0 ? 'none selected' : requiredLessonCount() + ' selected' }}
+            </span>
+          </label>
+          <div class="lesson-gate">
+            <div class="lesson-gate-cat" *ngFor="let cat of lessonCategories">
+              <div class="lesson-gate-cat-title">{{ cat }}</div>
+              <div class="checkbox-row">
+                <label class="ck" *ngFor="let l of lessonsByCategory(cat)">
+                  <input type="checkbox"
+                         [checked]="isLessonRequired(l.id)"
+                         (change)="toggleLesson(l.id)" />
+                  {{ l.title }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
       <!-- Prizes -->
       <fieldset>
         <legend>Prizes <span class="legend-hint">(shown on the contest's Prize tile in the app)</span></legend>

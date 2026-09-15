@@ -13,6 +13,7 @@ interface Contest {
   current_participants: number;
   max_participants: number;
   prizes?: any[];
+  entry_requirements?: { min_xp: number; required_lessons: string[] };
   starting_balance?: number;
   short_name?: string;
   timezone?: string;
@@ -66,11 +67,46 @@ export class ContestManagerComponent implements OnInit {
     prizes: [] as any[],
     max_participants: 100,
     visibility: 'public',
+    // Learning-gate entry requirements. min_xp 0 + no lessons = open contest.
+    entry_requirements: { min_xp: 0, required_lessons: [] as string[] },
     timezone: 'America/New_York',
     sponsor_name: '',
     sponsor_logo_url: '',
     sponsor_tagline: ''
   };
+
+  // Lesson catalog for the entry-requirement picker. Ids + titles mirror the
+  // mobile app's lesson list (lessons_page.dart, l1..l26); keep in sync when
+  // lessons change there. The gate stores only the ids the admin selects.
+  readonly lessonCategories = ['Basics', 'Portfolio', 'Strategy', 'Advanced', 'Crypto', 'Money'];
+  readonly lessonCatalog: { id: string; title: string; category: string }[] = [
+    { id: 'l1',  title: 'What is a Stock?',               category: 'Basics' },
+    { id: 'l2',  title: 'How Markets Work',               category: 'Basics' },
+    { id: 'l3',  title: 'Reading a Stock Chart',          category: 'Basics' },
+    { id: 'l4',  title: 'Bid/Ask & Spreads',              category: 'Basics' },
+    { id: 'l5',  title: 'Diversification',                category: 'Portfolio' },
+    { id: 'l6',  title: 'Risk vs Return',                 category: 'Portfolio' },
+    { id: 'l7',  title: 'Asset Allocation',               category: 'Portfolio' },
+    { id: 'l8',  title: 'ETFs & Mutual Funds',            category: 'Portfolio' },
+    { id: 'l9',  title: 'Real Estate Investing 101',      category: 'Portfolio' },
+    { id: 'l10', title: 'REITs & Commercial Real Estate', category: 'Portfolio' },
+    { id: 'l11', title: 'Dollar-Cost Averaging',          category: 'Strategy' },
+    { id: 'l12', title: 'Value vs Growth Investing',      category: 'Strategy' },
+    { id: 'l13', title: 'Dividend Investing',             category: 'Strategy' },
+    { id: 'l14', title: 'Technical Analysis Intro',       category: 'Strategy' },
+    { id: 'l15', title: 'Options Basics',                 category: 'Advanced' },
+    { id: 'l16', title: 'Short Selling',                  category: 'Advanced' },
+    { id: 'l17', title: 'Margin Trading',                 category: 'Advanced' },
+    { id: 'l18', title: 'Crypto Fundamentals',            category: 'Crypto' },
+    { id: 'l19', title: 'Budgeting Basics',               category: 'Money' },
+    { id: 'l20', title: 'Credit Scores',                  category: 'Money' },
+    { id: 'l21', title: 'Taxes 101',                      category: 'Money' },
+    { id: 'l22', title: 'Emergency Funds',                category: 'Money' },
+    { id: 'l23', title: 'Compound Interest',              category: 'Money' },
+    { id: 'l24', title: 'Inflation',                      category: 'Money' },
+    { id: 'l25', title: 'Banking Basics',                 category: 'Money' },
+    { id: 'l26', title: 'Student Loans',                  category: 'Money' },
+  ];
 
   timezoneOptions = [
     { value: 'America/New_York',    label: 'Eastern Time (ET)' },
@@ -147,6 +183,33 @@ export class ContestManagerComponent implements OnInit {
     );
   }
 
+  // ── Entry-requirement (learning gate) helpers ──────────────────────────────
+
+  lessonsByCategory(category: string): { id: string; title: string; category: string }[] {
+    return this.lessonCatalog.filter((l) => l.category === category);
+  }
+
+  isLessonRequired(lessonId: string): boolean {
+    return this.newContest.entry_requirements.required_lessons.includes(lessonId);
+  }
+
+  toggleLesson(lessonId: string): void {
+    const arr = this.newContest.entry_requirements.required_lessons;
+    const i = arr.indexOf(lessonId);
+    if (i >= 0) arr.splice(i, 1);
+    else arr.push(lessonId);
+  }
+
+  requiredLessonCount(): number {
+    return this.newContest.entry_requirements.required_lessons.length;
+  }
+
+  /** True when the contest has any learning gate (min XP or a required lesson). */
+  hasEntryGate(): boolean {
+    const er = this.newContest.entry_requirements;
+    return (Number(er.min_xp) || 0) > 0 || er.required_lessons.length > 0;
+  }
+
   saveContest(): void {
     // Drop empty prize rows so blanks never reach the API (and the app's Prize
     // tile). A prize counts only if it has a value or a description.
@@ -198,6 +261,10 @@ export class ContestManagerComponent implements OnInit {
           prizes: d.prizes || [],
           max_participants: d.max_participants ?? 100,
           visibility: d.visibility || 'public',
+          entry_requirements: {
+            min_xp: d.entry_requirements?.min_xp ?? 0,
+            required_lessons: [...(d.entry_requirements?.required_lessons || [])],
+          },
           timezone: d.timezone || 'America/New_York',
           sponsor_name: d.sponsor_name || '',
           sponsor_logo_url: d.sponsor_logo_url || '',
@@ -307,6 +374,7 @@ export class ContestManagerComponent implements OnInit {
       prizes: [],
       max_participants: 100,
       visibility: 'public',
+      entry_requirements: { min_xp: 0, required_lessons: [] },
       timezone: 'America/New_York',
       sponsor_name: '',
       sponsor_logo_url: '',
