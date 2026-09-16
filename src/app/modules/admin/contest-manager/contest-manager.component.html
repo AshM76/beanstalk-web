@@ -135,6 +135,84 @@
       </div>
     </section>
 
+    <!-- Contest Recap (concluded only) -->
+    <section class="drawer-section" *ngIf="selectedContest.status === 'concluded'">
+      <div class="section-head">
+        <h4>Contest Recap</h4>
+        <span *ngIf="recap"
+              class="badge-status"
+              [ngClass]="recap.status === 'published' ? 'badge-status--concluded' : 'badge-status--draft'"
+              style="position:static;display:inline-block">
+          {{ recap.status === 'published' ? 'Published' : 'Draft' }}
+        </span>
+      </div>
+
+      <div *ngIf="recapError" class="cm-error">{{ recapError }}</div>
+      <div *ngIf="recapLoading" class="text-muted">Loading recap…</div>
+
+      <!-- Nothing published yet -->
+      <div *ngIf="!recapLoading && !recap" class="recap-empty">
+        <p class="text-muted">
+          Cash can write a recap of this contest for the players. Generate a draft
+          to review it, then publish so players see it in the app.
+        </p>
+        <button class="btn btn-green" (click)="generateRecap()" [disabled]="recapBusy">
+          {{ recapBusy ? 'Generating…' : 'Generate recap' }}
+        </button>
+      </div>
+
+      <!-- Preview -->
+      <div *ngIf="recap" class="recap-preview">
+        <p class="recap-meta text-muted">
+          {{ recap.status === 'published' ? 'Published' : 'Draft' }}
+          <span *ngIf="recap.model"> · {{ recap.model }}</span>
+          <span *ngIf="recap.generated_at"> · generated {{ recap.generated_at | date:'short' }}</span>
+        </p>
+
+        <h5 class="recap-headline">{{ recap.recap?.headline }}</h5>
+        <p class="recap-body">{{ recap.recap?.market_recap }}</p>
+
+        <div *ngFor="let h of recap.recap?.highlights || []" class="recap-highlight">
+          <span class="recap-emoji">{{ h.emoji }}</span>
+          <div>
+            <strong>{{ h.title }}</strong>
+            <div class="text-muted">{{ h.body }}</div>
+          </div>
+        </div>
+
+        <div class="recap-scoreboard" *ngIf="recap.recap?.benchmark_scoreboard as sb">
+          <div class="recap-scoreline" *ngIf="sb.line">{{ sb.line }}</div>
+          <div class="recap-shares">
+            <span *ngIf="sb.beat_market_share !== null && sb.beat_market_share !== undefined">
+              📈 {{ (sb.beat_market_share * 100) | number:'1.0-0' }}% beat the market
+            </span>
+            <span *ngIf="sb.beat_savings_share !== null && sb.beat_savings_share !== undefined">
+              🐷 {{ (sb.beat_savings_share * 100) | number:'1.0-0' }}% beat savings
+            </span>
+          </div>
+        </div>
+
+        <ul class="recap-lessons" *ngIf="recap.recap?.lessons?.length">
+          <li *ngFor="let l of recap.recap.lessons">{{ l }}</li>
+        </ul>
+
+        <p class="recap-signoff" *ngIf="recap.recap?.cash_signoff">{{ recap.recap.cash_signoff }}</p>
+
+        <div class="recap-actions">
+          <button class="btn btn-green" *ngIf="recap.status !== 'published'"
+                  (click)="publishRecap()" [disabled]="recapBusy">
+            {{ recapBusy ? 'Working…' : 'Publish' }}
+          </button>
+          <button class="btn btn-outline" (click)="generateRecap(true)" [disabled]="recapBusy">
+            {{ recapBusy ? 'Working…' : 'Regenerate' }}
+          </button>
+        </div>
+        <p *ngIf="recap.status === 'published'" class="text-muted recap-note">
+          Players can now see this recap in the app.
+        </p>
+      </div>
+    </section>
+
     <!-- Notifications -->
     <section class="drawer-section">
       <div class="section-head">

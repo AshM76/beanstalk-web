@@ -125,6 +125,14 @@ export class ContestManagerComponent implements OnInit {
     userTokens: [] as string[]
   };
 
+  // Contest recap (Cash-narrated). For a concluded contest: generate a draft,
+  // review it, then publish so players see it in the app. `recap` is the stored
+  // record { status, recap, model, generated_at, published_at }.
+  recap: any = null;
+  recapLoading = false;
+  recapBusy = false;
+  recapError: string | null = null;
+
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
@@ -151,6 +159,54 @@ export class ContestManagerComponent implements OnInit {
   selectContest(contest: Contest): void {
     this.selectedContest = contest;
     this.loadParticipants(contest.contest_id);
+    this.recap = null;
+    this.recapError = null;
+    if (contest.status === 'concluded') this.loadRecap(contest.contest_id);
+  }
+
+  // ── Contest recap (Cash-narrated) ──────────────────────────────────────────
+
+  /** Load the published recap for a concluded contest. A 404 just means none is
+   *  published yet (a draft may still exist — reveal it with "Generate"). */
+  loadRecap(contestId: string): void {
+    this.recap = null;
+    this.recapError = null;
+    this.recapLoading = true;
+    this.http.get<any>(`${environment.baseUrl}/api/contests/${contestId}/recap`).subscribe({
+      next: (rec) => { this.recap = rec; this.recapLoading = false; },
+      error: (err) => {
+        this.recapLoading = false;
+        if (err?.status === 404) { this.recap = null; } // none published yet
+        else { console.error('Failed to load recap:', err); this.recapError = 'Failed to load recap'; }
+      },
+    });
+  }
+
+  /** Generate (or load) the recap DRAFT. Idempotent server-side: without
+   *  `force` it returns an existing draft rather than regenerating, so this
+   *  doubles as "load the draft an admin generated earlier or auto-gen created". */
+  generateRecap(force = false): void {
+    if (!this.selectedContest) return;
+    const id = this.selectedContest.contest_id;
+    this.recapBusy = true;
+    this.recapError = null;
+    const url = `${environment.baseUrl}/api/contests/${id}/recap/generate${force ? '?force=1' : ''}`;
+    this.http.post<any>(url, {}).subscribe({
+      next: (rec) => { this.recap = rec; this.recapBusy = false; },
+      error: (err) => { console.error('Recap generate failed:', err); this.recapError = 'Failed to generate recap'; this.recapBusy = false; },
+    });
+  }
+
+  /** Publish the reviewed draft so players can see it in the app. */
+  publishRecap(): void {
+    if (!this.selectedContest) return;
+    const id = this.selectedContest.contest_id;
+    this.recapBusy = true;
+    this.recapError = null;
+    this.http.post<any>(`${environment.baseUrl}/api/contests/${id}/recap/publish`, {}).subscribe({
+      next: (rec) => { this.recap = rec; this.recapBusy = false; },
+      error: (err) => { console.error('Recap publish failed:', err); this.recapError = 'Failed to publish recap'; this.recapBusy = false; },
+    });
   }
 
   loadParticipants(contestId: string): void {
@@ -463,5 +519,9 @@ export class ContestManagerComponent implements OnInit {
   deselectContest(): void {
     this.selectedContest = null;
     this.participants = [];
+    this.recap = null;
+    this.recapError = null;
+    this.recapBusy = false;
+    this.recapLoading = false;
   }
 }
